@@ -1,4 +1,4 @@
-define(function() {
+define(['sprintf'], function() {
     'use strict';
 
     var utils = {};
@@ -9,12 +9,12 @@ define(function() {
      * @param {object} [map.mixin]
      * @returns {function}
      */
-    utils.proto = function(map) {
+    utils.Class = function(map) {
+        var key;
         var constructor = map.constructor || function() {};
         var prototype = map.extends ?
                         Object.create(map.extends.prototype) :
                         {};
-        var key;
 
         for (key in map) {
             if (map.hasOwnProperty(key)) {
@@ -30,14 +30,21 @@ define(function() {
             }
         }
 
+//        console.log(constructor.prototype === prototype);
+//        console.log(prototype.constructor === constructor);
+
         constructor.prototype = prototype;
         prototype.constructor = constructor;
+
+//        console.log(constructor.prototype === prototype);
+//        console.log(prototype.constructor === constructor);
+//        console.log('-------------------------------');
 
         return constructor;
     };
 
     /**
-     * abc{0}de{2}f + ['@', '#] => 'abc@de#f'
+     * abc{0}de{1}f + ['@', '#] => 'abc@de#f'
      * abc{fst}de{snd}f + { fst: '@' } => 'abc@de{snd}f'
      * @param {string} string
      * @param {object} map
@@ -50,6 +57,32 @@ define(function() {
             return key in map ? map[key] : map[i++];
         });
         return result;
+    };
+
+    /**
+     * Может еще и такое:
+     * var users = [
+     *  {name: 'Dolly'},
+     *  {name: 'Molly'},
+     *  {name: 'Polly'}
+     * ];
+     * sprintf('Hello %(users[0].name)s, %(users[1].name)s and %(users[2].name)s', {users: users});
+     * // Hello Dolly, Molly and Polly
+     * @type {function}
+     */
+    utils.sprintf = require('sprintf');
+
+    /**
+     *
+     * @returns {Array}
+     */
+    utils.callStack = function() {
+        try {
+            new Error('###');
+            return [];
+        } catch (e) {
+            return e.stack.replace(/[ ]{2,}/g, '').split(/\n/).slice(1);
+        }
     };
 
     /**
@@ -85,48 +118,39 @@ define(function() {
      * @type {Function}
      * @class {EventEmitter}
      */
-    utils.EventEmitter = utils.proto({
+    utils.EventEmitter = utils.Class({
         constructor: function EventEmitter() {
-            this._events = {};
+            this.events = {};
         },
         on: function(event, fn) {
-            if (!this._events[event]) {
-                this._events[event] = [];
+            if (!this.events[event]) {
+                this.events[event] = [];
             }
-            this._events[event].push(fn);
-        },
-        onAny: function(fn) {
-            for (var event in this._events) {
-                this._events[event].push(fn);
-            }
+            this.events[event].push(fn);
         },
         off: function(event, fn) {
-            if (this._events[event]) {
+            if (this.events[event]) {
                 if (fn) {
-                    var index = this._events[event].indexOf(fn);
-                    this._events[event].splice(index, 1);
+                    var index = this.events[event].indexOf(fn);
+                    this.events[event].splice(index, 1);
                 } else {
-                    this._events[event] = [];
+                    this.events[event] = [];
                 }
-            }
-        },
-        clear: function(event) {
-            if (event) {
-                if (event in this._events) {
-                    delete this._events[event];
-                }
-            } else {
-                this._events = {};
             }
         },
         trigger: function(event, data) {
-            if (this._events[event]) {
-                var subscribers = this._events[event];
+            if (this.events[event]) {
+                var subscribers = this.events[event];
                 data = data || {};
                 data.__event = event;
                 for (var i in subscribers) {
                     subscribers[i].call(this, data);
                 }
+            }
+        },
+        debug: function(fn) {
+            for (var event in this.events) {
+                this.events[event].push(fn);
             }
         }
     });

@@ -5,28 +5,31 @@ define(['utils', 'modules/sandbox', 'models/wave'], function() {
     var sandbox = require('modules/sandbox');
     var Wave = require('models/wave');
 
-    var World = utils.proto({
+    var World = utils.Class({
+
         constructor: function World() {
             this.objects = [];
-            this.frame = 0;
 
-            sandbox.on('tick', function(e) {
-                e.dt = this.frame;
-                this.frame++;
+            sandbox.on('domEvents.add', this.add.bind(this));
+//            sandbox.on('domEvents.back', this.add.bind(this));
+            sandbox.on('viewport.frame', this.frame.bind(this));
+        },
 
-                this.objects = this.objects.filter(function(wave) {
-                    return wave.step(e);
-                });
+        add: function(e) {
+            var wave = new Wave(e.x, e.y);
+            this.objects.push(wave);
+        },
 
-                if (this.objects.length === 0) {
-                    sandbox.trigger('stop');
-                }
-            }.bind(this));
+        frame: function(e) {
+            this.objects = this.objects.filter(function(wave) {
+                wave.draw(e.context);
+                wave.physics(e.size);
+                return wave.isAlive();
+            });
 
-            sandbox.on('click', function(e) {
-                var wave = new Wave(e.x, e.y);
-                this.objects.push(wave);
-            }.bind(this));
+            if (this.objects.length === 0) {
+//                sandbox.trigger('world.stop');
+            }
         }
     });
 
