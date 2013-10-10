@@ -144,13 +144,15 @@ define(['sprintf'], function() {
                 data = data || {};
                 data.__event = event;
                 for (var i in subscribers) {
-                    subscribers[i].call(this, data);
+                    if (subscribers[i].call(this, data) === false) {
+                        break;
+                    }
                 }
             }
         },
         debug: function(fn) {
             for (var event in this.events) {
-                this.events[event].push(fn);
+                this.events[event].unshift(fn);
             }
         }
     });

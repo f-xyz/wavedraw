@@ -3,10 +3,181 @@
 <head>
     <title>SimWave</title>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="lib/jquery-ui/themes/dot-luv/jquery-ui.css" />
+    <link rel="stylesheet" href="lib/jquery-ui/themes/dot-luv/jquery.ui.theme.css" />
+    <link rel="stylesheet" href="lib/select2/select2.css" />
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body ng-app="waves">
+
+    <div class="navbar navbar-inverse _navbar-fixed-top" ng-controller="navbar">
+        &nbsp;
+        <a href="#/edit" class="navbar-btn btn btn-primary btn-info">Edit</a>
+        &nbsp;
+        <a href="#/gallery" class="navbar-btn btn btn-primary">Gallery</a>
+        <div class="pull-right" style="width: 20px; height: 20px; margin-top: 15px; margin-right: 15px; background: green; border-radius: 10px;"></div>
+    </div>
+
     <canvas></canvas>
+
+    <div class="options-panel clearfix" ng-controller="config">
+
+        <div class="block hack">
+            <h3>Color range</h3>
+            <div class="slider" ui-slider="{ range: true, min: 0, max: 255 }" ng-model="conf.r.range">
+                <div class="color red">R</div>
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.r.range[0]" />
+                <input type="text" maxlength="3" class="slider-end-value" ng-model="conf.r.range[1]" />
+            </div>
+            <div class="slider" ui-slider="{ range: true, min: 0, max: 255 }" ng-model="conf.g.range">
+                <div class="color green">G</div>
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.g.range[0]" />
+                <input type="text" maxlength="3" class="slider-end-value" ng-model="conf.g.range[1]" />
+            </div>
+            <div class="slider" ui-slider="{ range: true, min: 0, max: 255 }" ng-model="conf.b.range">
+                <div class="color blue">B</div>
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.b.range[0]" />
+                <input type="text" maxlength="3" class="slider-end-value" ng-model="conf.b.range[1]" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Mod. speed (s)</h3>
+            <div class="slider" ui-slider="{ min: 0.1, max: 5, step: 0.05 }" ng-model="conf.r.velocity">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.r.velocity" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0.1, max: 5, step: 0.05 }" ng-model="conf.g.velocity">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.g.velocity" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0.1, max: 5, step: 0.05 }" ng-model="conf.b.velocity">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.b.velocity" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Mod. phase</h3>
+            <div class="slider" ui-slider="{ min: -90, max: 90 }" ng-model="conf.r.phase">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.r.phase" />
+            </div>
+            <div class="slider" ui-slider="{ min: -90, max: 90 }" ng-model="conf.g.phase">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.g.phase" />
+            </div>
+            <div class="slider" ui-slider="{ min: -90, max: 90 }" ng-model="conf.b.phase">
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.b.phase" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Drawing</h3>
+            <div class="slider" ui-slider="{ min: 0, max: 100 }" ng-model="conf.clearOpacity">
+                <label>Clear opacity</label>
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.clearOpacity" />
+            </div>
+            <div class="slider" ui-slider="{ min: 1, max: 100 }" ng-model="conf.drawOpacity">
+                <label>Draw opacity</label>
+                <input type="text" maxlength="3" class="slider-start-value" ng-model="conf.drawOpacity" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0, max: 999 }" ng-model="conf.delay">
+                <label>Delay</label>
+                <input type="text" maxlength="3" ng-model="conf.delay" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Particles</h3>
+            <div class="slider" ui-slider="{ min: 1, max: 999 }" ng-model="conf.count">
+                <label>Count</label>
+                <input type="text" maxlength="3" ng-model="conf.count" />
+            </div>
+            <div class="slider" ui-slider="{ min: 1, max: 999 }" ng-model="conf.ttl">
+                <label>TTL</label>
+                <input type="text" maxlength="3" ng-model="conf.ttl" />
+            </div>
+            <label>
+                <input class="front" type="checkbox" ng-model="conf.reflection" />
+                <span>Screen edge reflection</span>
+            </label>
+        </div>
+
+        <div class="block">
+            <h3>Physics</h3>
+            <div class="slider" ui-slider="{ min: 0.1, max: 10, step: 0.1 }" ng-model="conf.velocity">
+                <label>Velocity</label>
+                <input type="text" maxlength="3" ng-model="conf.velocity" />
+            </div>
+            <div class="slider" ui-slider="{ min: -18, max: 18, step: 0.1 }" ng-model="conf.rotation">
+                <label>Rotation</label>
+                <input type="text" maxlength="3" ng-model="conf.rotation" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0, max: 10, step: 0.1 }" ng-model="conf.friction">
+                <label>Friction</label>
+                <input type="text" maxlength="3" ng-model="conf.friction" />
+            </div>
+        </div>
+
+        <div class="block big">
+            <h3>Effect</h3>
+            <select class="select2 big" multiple ui-select2="{ multiple: true }" ng-model="conf.processing.effects">
+                <option ng-repeat="(name, p) in processing" value="{{name}}">{{name}}</option>
+            </select>
+        </div>
+
+        <div class="block">
+            <div class="slider" ui-slider="{ min: 0, max: 2, step: 0.01 }" ng-model="conf.processing.params[0]">
+                <label>Effect param 1</label>
+                <input type="text" maxlength="3" ng-model="conf.processing.params[0]" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0, max: 2, step: 0.01 }" ng-model="conf.processing.params[1]">
+                <label>Effect param 2</label>
+                <input type="text" maxlength="3" ng-model="conf.processing.params[1]" />
+            </div>
+            <div class="slider" ui-slider="{ min: 0, max: 2, step: 0.01 }" ng-model="conf.processing.params[2]">
+                <label>Effect param 3</label>
+                <input type="text" maxlength="3" ng-model="conf.processing.params[2]" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Renderers</h3>
+            <select class="select2" multiple ui-select2="{ multiple: true }" ng-model="conf.renderers">
+                <option ng-repeat="name in renderers" value="{{name}}">{{name}}</option>
+            </select>
+        </div>
+
+        <div class="block">
+            <h3>Particle size</h3>
+            <div class="slider" ui-slider="{ min: 1, max: 100 }" ng-model="conf.particleSize">
+                <input type="text" maxlength="3" ng-model="conf.particleSize" />
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Load / Delete</h3>
+            <select class="select2" ui-select2 ng-model="preset" ng-change="load(preset)">
+                <option ng-repeat="(name, preset) in presetMan.presets" value="{{name}}">{{name}}</option>
+            </select>
+            <br>
+            <br>
+            <br>
+            <button class="btn btn-primary btn-xs" ng-disabled="preset=='Default'" ng-click="remove(preset)">Remove</button>
+        </div>
+
+        <div class="block">
+            <h3>Save</h3>
+            <input class="form-control input-sm" type="text" ng-model="presetName" />
+            <button class="btn btn-primary btn-xs"
+                ng-disabled="presetName=='Default' || !presetName"
+                ng-click="save(presetName)">Save</button>
+        </div>
+
+    </div>
+
+    <script>
+        document.onselectstart = function() { return false; };
+    </script>
     <script data-main="app/main" src="lib/requirejs/require.js"></script>
 </body>
 </html>

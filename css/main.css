@@ -1,2 +1,97 @@
-body { background: black; margin: 0; }
-canvas { position: fixed; width: 100%; height: 100%; /*background: white; outline: 5px dashed red;*/ }
+body {
+    background: black;
+    font: 10px/1 Arial; }
+
+canvas {
+    position: fixed;
+    top: 50px; }
+
+h3 {
+    position: relative;
+    margin: 10px;
+    font-size: 16px;
+    color: #666;
+    text-align: center; }
+
+.front { position: relative; }
+
+.red { color: #f00; }
+.green { color: #0f0; }
+.blue { color: #00b; }
+
+hr {
+    clear: both;
+    margin: 0 20px;
+    border-color: transparent; }
+
+.navbar {
+    height: 50%;
+    margin-bottom: 0; }
+
+.options-panel {
+    width: 100%;
+    padding: 0; }
+.options-panel ul {
+    border: none;
+    border-radius: 0;
+    background: none; }
+.options-panel ul a { outline: none; }
+
+.block {
+    float: left;
+    width: 140px; height: 137px;
+    margin: 20px 50px 20px 30px; }
+.block.hack {
+    width: 200px;
+    margin-right: 80px; }
+.block.big {
+    width: 200px;
+    margin-right: 80px; }
+
+.block > label { margin-top: -5px; }
+.block > label span {
+    position: relative;
+    top: -3px; }
+
+.block button { position: relative; }
+.block input { position: relative; }
+.block .input-sm { height: 26px; margin-bottom: 3px; }
+
+.slider {
+    margin: 20px 0; }
+.slider .ui-slider-handle { outline: none; }
+.slider input {
+    outline: none;
+    position: absolute;
+    top: -6px; right: -40px;
+    width: 30px; height: 20px;
+    text-align: center;
+    border: 1px solid #333; border-radius: 3px;
+    background: #666; }
+.slider input.slider-end-value { right: -80px; }
+.slider .color {
+    position: absolute;
+    left: -25px; top: -2px; }
+.slider label {
+    position: absolute;
+    top: -16px;
+    width: 100%;
+    font-size: 10px;
+    color: #666; }
+
+.select2 {
+    position: absolute;
+    width: 140px;
+    border: 1px solid #333; border-radius: 3px; }
+    .select2.big { width: 200px; }
+    .select2-choices {
+        background: #333 !important;
+        border: #333 !important; }
+    .select2-drop {
+        background: #333 !important;
+        border: #333 !important;
+        color: #999; }
+    .select2-search-choice {
+        background: #666 !important;
+        border: #444 !important;
+        color: #eee !important; }
