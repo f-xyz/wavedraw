@@ -1,5 +1,7 @@
 define(
-    ['utils', 'conf', 'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/presetManager'],
+    ['utils', 'conf',
+    'modules/sandbox', 'modules/viewport', 'modules/domEvents',
+    'modules/world', 'modules/presetManager', 'modules/popup'],
     function() {
         'use strict';
 
@@ -11,6 +13,7 @@ define(
             window.viewport = require('modules/viewport');
             window.domEvents = require('modules/domEvents');
             window.world = require('modules/world');
+            window.popup = require('modules/popup');
             window.presetMan = require('modules/presetManager');
         }
         if (conf.debug > 1) {

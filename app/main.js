@@ -28,7 +28,7 @@ window.name = "NG_DEFER_BOOTSTRAP!";
 require(
     ['modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world',
      'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
-     'modules/debug'],
+     'modules/debug', 'modules/popup'],
     function() {
         'use strict';
 

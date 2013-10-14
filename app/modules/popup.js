@@ -6,11 +6,21 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
     var sandbox = require('modules/sandbox');
 
     var Popup = utils.Class({
-        costructor: function Popup() {
-            sandbox.on('opup');
+        constructor: function Popup() {
+            console.log('constructor');
+        },
+        initialize: function() {
+            console.log('initialize');
         }
     });
 
-    return new Popup();
-
+//    return new Popup();
+    return {
+        constructor: function Popup() {
+            console.log('constructor');
+        },
+        initialize: function() {
+            console.log('initialize');
+        }
+    };
 });
