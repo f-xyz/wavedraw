@@ -12,9 +12,9 @@ define(['utils'], function() {
         },
         mix: function(to, t) {
             return new Rgba(
-                utils.mix(this.r, to.r, t),
-                utils.mix(this.g, to.g, t),
-                utils.mix(this.b, to.b, t),
+                Math.floor(utils.mix(this.r, to.r, t)),
+                Math.floor(utils.mix(this.g, to.g, t)),
+                Math.floor(utils.mix(this.b, to.b, t)),
                 utils.mix(this.a, to.a, t)
             );
         },

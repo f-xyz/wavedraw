@@ -1,9 +1,10 @@
-define(['utils', 'modules/sandbox', 'modules/viewport'], function() {
+define(['utils', 'modules/sandbox', 'modules/viewport', 'modules/world'], function() {
     'use strict';
 
     var utils = require('utils');
     var sandbox = require('modules/sandbox');
     var viewport = require('modules/viewport');
+    var world = require('modules/world');
 
     var DomEvents = utils.Class({
 
@@ -16,15 +17,22 @@ define(['utils', 'modules/sandbox', 'modules/viewport'], function() {
             viewport.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
             viewport.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
             viewport.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+            viewport.canvas.addEventListener('mouseout', this.onMouseOut.bind(this));
         },
 
         onKeypress: function(e) {
-            if (e.keyCode === 32) {
-                sandbox.trigger('domEvents.toggle');
-            } else if (e.keyCode === 13) {
-                sandbox.trigger('domEvents.once');
-            } else if (e.keyCode === 27) {
-                sandbox.trigger('domEvents.clear');
+            if (e.keyCode === 32 && world.objects.length) {
+                e.preventDefault();
+                sandbox.trigger('*.toggle');
+            } else if (e.keyCode === 67 && e.ctrlKey && !e.shiftKey) { // c
+                e.preventDefault();
+                sandbox.trigger('*.toggleControlPanel');
+            } else if (e.keyCode === 71 && e.ctrlKey) { // g
+                e.preventDefault();
+                sandbox.trigger('*.toggleGallery');
+            } else if (e.keyCode === 90 && e.ctrlKey) { // z
+                e.preventDefault();
+                sandbox.trigger('*.reset');
             }
         },
 
@@ -47,6 +55,10 @@ define(['utils', 'modules/sandbox', 'modules/viewport'], function() {
             if (this.drawing) {
                 this.onClick(e);
             }
+        },
+
+        onMouseOut: function(e) {
+            this.drawing = false;
         },
 
         onResize: function() {

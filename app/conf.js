@@ -2,20 +2,22 @@ define(function() {
     'use strict';
 
     return {
+
         debug: 1,
+
+        renderers: [ 'Lines', 'Dots', 'Stars' ],
 
         preset: {
 
-            clearOpacity: 1,
             drawOpacity: 100,
             particleSize: 1,
+            persistence: true,
 
-            renderers: ['Webs'],
+            renderers: ['Lines'],
             reflection: true,
-            eraser: false, // doesn't have a control yet
 
             delay: 100,
-            count: 360,
+            count: 36,
             ttl: 100,
             velocity: 1,
             rotation: 0,

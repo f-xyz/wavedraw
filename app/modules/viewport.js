@@ -1,15 +1,14 @@
-define(['utils', 'conf', 'stats', 'modules/sandbox'], function() {
+define(['utils', 'conf', 'modules/sandbox'], function() {
     'use strict';
 
     var utils = require('utils');
+    var conf = require('conf');
     var sandbox = require('modules/sandbox');
-    var preset = require('conf').preset;
-    var Stats = new require('stats');
 
     var Viewport = utils.Class({
 
         constructor: function Viewport() {
-            this.canvas = document.querySelector('canvas');
+            this.canvas = document.querySelector('#viewport');
             this.context = this.canvas.getContext('2d');
             this.context.globalCompositeOperation = 'lighter';
 
@@ -17,23 +16,21 @@ define(['utils', 'conf', 'stats', 'modules/sandbox'], function() {
             this.running = false;
 
             sandbox.on('domEvents.resize', this.onResize.bind(this));
-            sandbox.on('domEvents.toggle', this.toggle.bind(this));
             sandbox.on('domEvents.add', this.start.bind(this));
-            sandbox.on('domEvents.clear', this.reset.bind(this));
-            sandbox.on('world.stop', this.stop.bind(this));
+            sandbox.on('world.stop', function() {
+                conf.preset.persistence ? this.stop() : this.reset();
+            }.bind(this));
+            sandbox.on('*.toggle', this.toggle.bind(this));
+            sandbox.on('*.reset', this.reset.bind(this));
+            sandbox.on('*.fullScreen', this.fullScreen.bind(this));
 
-            this.initStats();
             this.onResize();
         },
 
-        initStats: function() {
-            this.stats = new Stats();
-            var el = this.stats.domElement;
-            el.style.position = 'fixed';
-            el.style.right = '10px';
-            el.style.bottom = '10px';
-
-            document.body.appendChild(el);
+        initFpsCounter: function() {
+            this.fps = 0;
+            this.lastFpsCalcTime = null;
+            this.framesProcessed = 0;
         },
 
         onResize: function() {
@@ -48,7 +45,8 @@ define(['utils', 'conf', 'stats', 'modules/sandbox'], function() {
             this.context.canvas.width = this.size.x;
             this.context.canvas.height = this.size.y;
 
-            this.reset();
+            this.context.fillStyle = 'black';
+            this.context.fillRect(0, 0, this.size.x, this.size.y);
         },
 
         /////////////////////////////////////////////////////////
@@ -56,14 +54,19 @@ define(['utils', 'conf', 'stats', 'modules/sandbox'], function() {
         start: function() {
             if (!this.running) {
                 this.running = true;
+                this.initFpsCounter();
                 this.loop();
+                sandbox.trigger('viewport.start');
             }
         },
 
         stop: function() {
             if (this.running) {
                 this.running = false;
-                this.drawIndicator();
+                sandbox.trigger('viewport.stop');
+
+                this.initFpsCounter();
+                sandbox.trigger('viewport.fpsMeasured', this.fps);
             }
         },
 
@@ -88,44 +91,64 @@ define(['utils', 'conf', 'stats', 'modules/sandbox'], function() {
         },
 
         frame: function() {
-            this.stats.begin();
             this.clear();
+
             sandbox.trigger('viewport.frame', {
                 canvas: this.canvas,
                 context: this.context,
                 size: this.size
             });
-            this.drawIndicator();
-            this.stats.end();
+
+            this.framesProcessed++;
+
+            var time = Date.now();
+            var dt = time - this.lastFpsCalcTime;
+            if (dt >= 1000) {
+                this.fps = Math.round(this.framesProcessed / dt * 1000);
+                this.lastFpsCalcTime = time;
+                this.framesProcessed = 0;
+                sandbox.trigger('viewport.fpsMeasured', this.fps);
+            }
         },
 
         clear: function() {
-            if (preset.clearOpacity > 0) {
-                // ugly chrome bug workaround
-                var opacity = Math.min(preset.clearOpacity/100 + 0.15, 1);
-                this.context.fillStyle = 'rgba(0, 0, 0, ' + opacity + ')';
+            if (!conf.preset.persistence) {
+                this.context.fillStyle = 'rgba(0, 0, 0, 0.15)';
                 this.context.fillRect(0, 0, this.size.x, this.size.y);
             }
         },
 
         reset: function() {
-            this.context.clearRect(0, 0, this.size.x, this.size.y);
-            this.drawIndicator();
+            this.context.fillStyle = 'black';
+            this.context.fillRect(0, 0, this.size.x, this.size.y);
             this.stop();
         },
 
-        drawIndicator: function() {
-            var ctx = this.context;
+        fullScreen: function() {
+            // OMG
+            if (!document.fullscreenElement
+            &&  !document.webkitFullscreenElement
+            &&  !document.mozFullScreenElement
+            ) {
+                var element = document.documentElement;
+                if (element.requestFullScreen) {
+                    element.requestFullScreen();
+                } else if (element.webkitRequestFullScreen) {
+                    element.webkitRequestFullScreen()
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                }
+            } else {
+                if (document.cancelFullScreen) {
+                    document.cancelFullScreen();
+                } else if (document.webkitCancelFullScreen) {
+                    document.webkitCancelFullScreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                }
+            }
 
-            ctx.beginPath();
-//            ctx.arc(this.size.x-20, 20, 10, 0, 2*Math.PI, false);
-            ctx.arc(this.size.x-20, this.size.y-100, 10, 0, 2*Math.PI, false);
-            ctx.closePath();
-            ctx.fillStyle = ctx.strokeStyle = this.running ?
-                'rgba(50, 255, 50, 1)' :
-                'rgba(255, 50, 50, 1)';
-            ctx.fill();
-            ctx.stroke();
+            this.onResize();
         }
     });
 

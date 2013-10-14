@@ -7,7 +7,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
     'use strict';
 
     var utils = require('utils');
-    var preset = require('conf').preset;
+    var conf = require('conf');
     var processing = require('models/processing');
     var Rgba = require('models/rgba');
 
@@ -20,19 +20,22 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
             this.x = x;
             this.y = y;
             this.direction = direction;
+
+            var preset = conf.preset;
             this.velocity = preset.velocity;
             this.friction = preset.friction/100 + 1;
             this.rotation = preset.rotation/180*Math.PI;
         }
     });
 
-
     var Wave = utils.Class({
 
         constructor: function Wave(x, y) {
+            var preset = conf.preset;
+
             this.particles = [];
             this.ttl = this.maxTtl = preset.ttl;
-            this.opacity = preset.drawOpacity/100;
+            this.opacity = preset.drawOpacity / (preset.persistence ? 1500 : 100);
 
             var time = Date.now() / 1000;
             var r = preset.r;
@@ -54,6 +57,8 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
         },
 
         physics: function(size) {
+            var preset = conf.preset;
+
             var t = 1 - this.ttl/this.maxTtl;
 
             var len = this.particles.length;
@@ -114,7 +119,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
 
         draw: function(ctx) {
             var self = this;
-            preset.renderers.forEach(function(mode) {
+            conf.preset.renderers.forEach(function(mode) {
                 self['draw' + mode](ctx);
             });
         },
@@ -125,7 +130,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
 
         /////////////////////////////////////////////////
 
-        drawWebs: function(ctx) {
+        drawLines: function(ctx) {
             ctx.beginPath();
             var len = this.particles.length;
             var last = this.particles[len - 1];
@@ -135,35 +140,22 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
                 ctx.lineTo(particle.x, particle.y);
                 last = particle;
             }
-            ctx.lineWidth = preset.particleSize;
+            ctx.lineWidth = conf.preset.particleSize;
             ctx.strokeStyle = this.color.toString();
             ctx.stroke();
         },
 
-        drawBalls: function(ctx) {
-            ctx.beginPath();
-            var len = this.particles.length;
-            for (var i = 0; i < len; i++) {
-                var particle = this.particles[i];
-                ctx.arc(particle.x, particle.y, preset.particleSize, 0, 2*Math.PI, false);
-            }
-            ctx.closePath();
-            ctx.fillStyle = this.color.toString();
-            ctx.fill();
-        },
-
-        drawLines: function(ctx) {
+        drawDots: function(ctx) {
             ctx.beginPath();
             var len = this.particles.length;
             for (var i = 0; i < len; i++) {
                 var particle = this.particles[i];
                 ctx.moveTo(particle.x, particle.y);
-                ctx.lineTo(particle.x+0.5, particle.y+0.5);
+                ctx.arc(particle.x, particle.y, conf.preset.particleSize, 0, 2*Math.PI, false);
             }
             ctx.closePath();
-            ctx.lineWidth = preset.particleSize;
-            ctx.strokeStyle = this.color.toString();
-            ctx.stroke();
+            ctx.fillStyle = this.color.toString();
+            ctx.fill();
         },
 
         drawStars: function(ctx) {
@@ -181,7 +173,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
                 ctx.lineTo(particle.x, particle.y+0.5);
             }
             ctx.closePath();
-            ctx.lineWidth = preset.particleSize;
+            ctx.lineWidth = conf.preset.particleSize;
             ctx.strokeStyle = this.color.toString();
             ctx.stroke();
         }

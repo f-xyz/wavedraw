@@ -44,6 +44,7 @@ define(['sprintf'], function() {
     };
 
     /**
+     * Микро-темплейты.
      * abc{0}de{1}f + ['@', '#] => 'abc@de#f'
      * abc{fst}de{snd}f + { fst: '@' } => 'abc@de{snd}f'
      * @param {string} string
@@ -52,11 +53,10 @@ define(['sprintf'], function() {
      */
     utils.template = function(string, map) {
         var i = 0;
-        var result = string.replace(/\{\w+\}/g, function(match) {
+        return string.replace(/\{\w+\}/g, function(match) {
             var key = match.substr(1, match.length - 2);
             return key in map ? map[key] : map[i++];
         });
-        return result;
     };
 
     /**
@@ -73,7 +73,6 @@ define(['sprintf'], function() {
     utils.sprintf = require('sprintf');
 
     /**
-     *
      * @returns {Array}
      */
     utils.callStack = function() {
@@ -141,7 +140,9 @@ define(['sprintf'], function() {
         trigger: function(event, data) {
             if (this.events[event]) {
                 var subscribers = this.events[event];
-                data = data || {};
+                if (data === undefined || data === null) {
+                    data = {};
+                }
                 data.__event = event;
                 for (var i in subscribers) {
                     if (subscribers[i].call(this, data) === false) {
