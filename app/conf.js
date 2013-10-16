@@ -9,6 +9,14 @@ define(function() {
 
         preset: {
 
+            author: {
+                name: null,
+                email: null
+            },
+
+            preview: null,
+            rating: null,
+
             drawOpacity: 100,
             particleSize: 1,
             persistence: true,

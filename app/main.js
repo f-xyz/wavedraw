@@ -1,23 +1,25 @@
 require.config({
     baseUrl: 'app',
     paths: {
-        jQuery:     '../lib/jquery/jquery',
-        jQueryUi:   '../lib/jquery-ui/ui/jquery-ui',
-        angular:    '../lib/angular/angular',
-        angularUi:  '../lib/angular-ui/build/angular-ui',
-        domReady:   '../lib/requirejs-domready/domReady',
-        sprintf:    '../lib/sprintf/src/sprintf',
-        slider:     '../lib/angular-ui-slider/src/slider',
-        select2:    '../lib/angular-ui-select2/src/select2'
+        domReady:       '../lib/requirejs-domready/domReady',
+        sprintf:        '../lib/sprintf/src/sprintf',
+        jQuery:         '../lib/jquery/jquery',
+        jQueryUi:       '../lib/jquery-ui/ui/jquery-ui',
+        jQuerySelect2:  '../lib/select2/select2',
+        angular:        '../lib/angular/angular',
+        angularUi:      '../lib/angular-ui/build/angular-ui',
+        slider:         '../lib/angular-ui-slider/src/slider',
+        select2:        '../lib/angular-ui-select2/src/select2'
     },
     shim: {
-        jQuery:     { exports: 'jQuery' },
-        jQueryUi:   { exports: 'jQuery.ui', deps: ['jQuery'] },
-        angular:    { exports: 'angular',   deps: ['jQuery'] },
-        angularUi:  { exports: 'angular',   deps: ['angular'] },
-        sprintf:    { exports: 'sprintf' },
-        slider:     { exports: 'angular',   deps: ['angular'] },
-        select2:    { exports: 'angular',   deps: ['angular', 'jQuery', '../lib/select2/select2'] }
+        jQuery:         { exports: 'jQuery' },
+        jQueryUi:       { exports: 'jQuery.ui', deps: ['jQuery'] },
+        jQuerySelect2:  { exports: 'jQuery.ui', deps: ['jQuery'] },
+        angular:        { exports: 'angular',   deps: ['jQuery'] },
+        angularUi:      { exports: 'angular',   deps: ['angular'] },
+        sprintf:        { exports: 'sprintf' },
+        slider:         { exports: 'angular',   deps: ['angular'] },
+        select2:        { exports: 'angular',   deps: ['angular', 'jQuery', 'jQuerySelect2'] }
     },
     urlArgs: Date.now()
 });
