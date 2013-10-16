@@ -6,7 +6,7 @@
         "url": "git://github.com/fantasticMrFox/wavedraw.git"
     },
     "dependencies": {
-        "connect": "2.9.x"
+        "mime": "1.2.x"
     },
     "engines": {
         "node": "0.10.x",

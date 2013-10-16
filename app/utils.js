@@ -60,14 +60,9 @@ define(['sprintf'], function() {
     };
 
     /**
-     * Может еще и такое:
-     * var users = [
-     *  {name: 'Dolly'},
-     *  {name: 'Molly'},
-     *  {name: 'Polly'}
-     * ];
-     * sprintf('Hello %(users[0].name)s, %(users[1].name)s and %(users[2].name)s', {users: users});
-     * // Hello Dolly, Molly and Polly
+     * sprintf("%s %.2f %u", ...);
+     * var users = [ {name: '000'}, {name: '111'}, {name: '222'} ];
+     * sprintf('%(users[0].name), %(users[1].name) and %(users[2].name)', {users: users});
      * @type {function}
      */
     utils.sprintf = require('sprintf');
