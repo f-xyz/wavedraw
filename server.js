@@ -1,12 +1,12 @@
-'use strict';
-
 var http = require('http');
 var url = require('url');
 var path = require('path');
 var fs = require('fs');
+var qs = require('querystring');
 var mime = require('mime');
 var util = require('util');
 var events = require('events');
+var async = require('async');
 
 var app = {
 
@@ -15,7 +15,7 @@ var app = {
     port: process.env.PORT || 5000,
     routes: [ /^\/(\w+)\/?(\w*)(.*)/ ],
 
-    main: function() {
+    listen: function() {
         this.server = http.createServer(this.request.bind(this));
         this.server.listen(this.port);
         this.log('[main] started on port ' + this.port);
@@ -49,7 +49,7 @@ var app = {
                 this.processFile(response, path);
             }
 
-        } else if (!this.processRequest(request, response, requestUrl)) {
+        } else if (!this.processController(request, response, requestUrl)) {
 
             message = '404 Not Found';
             this.log(message + ': ' + path);
@@ -59,9 +59,10 @@ var app = {
     },
 
     isForbidden: function(path) {
-        return this.forbidden.some(function(regExp) {
-            return regExp.test(path);
-        });
+        return false;
+//        return this.forbidden.some(function(regExp) {
+//            return regExp.test(path);
+//        });
     },
 
     isDirectory: function(path) {
@@ -99,7 +100,7 @@ var app = {
         }.bind(this));
     },
 
-    processRequest: function(request, response, url) {
+    processController: function(request, response, url) {
         var i, regExp, parts;
         for (i in this.routes) {
             regExp = this.routes[i];
@@ -131,12 +132,6 @@ var app = {
         console.log(msg);
     },
 
-    debug: function(response, data) {
-        response.writeHead(200, {'Content-Type': 'text/plain'});
-        response.write(util.inspect(data));
-        response.end('\n');
-    },
-
     error: function(response, code, msg) {
         response.writeHead(code, {'Content-Type': 'text/plain'});
         response.end(msg + '\n');
@@ -146,18 +141,61 @@ var app = {
 var controllers = {
     presets: {
         index: function(request, response) {
-            fs.readFile('db/presets.json', function(err, file) {
-                if (err) throw new Error(err);
-
+            presets.load(function(presets) {
                 response.writeHead(200, {'Content-Type': 'text/json'});
-                response.write(file);
+                response.write(JSON.stringify(presets));
                 response.end('\n');
             });
         },
-        save: function(request, response, url) {
-            app.debug(url);
+        save: function(request, response) {
+            var post = '';
+            request.addListener('data', function(chunk) { post += chunk; });
+            request.addListener('end', function() {
+                post = qs.parse(post);
+                presets.save(post.name, post.preset, function() {
+                    response.writeHead(200, {'Content-Type': 'text/json'});
+                    response.write(JSON.stringify({ok: true}));
+                    response.end('\n');
+                });
+            });
         }
+    },
+    download: function(request, response) {
+        var post = '';
+        request.addListener('data', function(chunk) { post += chunk; });
+        request.addListener('end', function() {
+            post = qs.parse(post);
+            response.writeHead(200, {'Content-Type': 'text/plain'});
+            response.write(post);
+            response.end();
+        });
     }
 };
 
-app.main();
+var presets = {
+    dbPath: 'db/presets.json',
+    presets: null,
+    load: function(callback) {
+        if (this.presets) {
+            callback(this.presets);
+        } else {
+            fs.readFile(this.dbPath, function(err, file) {
+                if (err) throw new Error(err);
+                this.presets = JSON.parse(file);
+                callback(this.presets);
+            }.bind(this));
+        }
+    },
+    save: function(name, preset, callback) {
+        this.load(function() {
+            this.presets[name] = preset;
+            var json = JSON.stringify(this.presets);
+            fs.writeFile(this.dbPath, json, function(err) {
+                if (err) throw new Error(err);
+                callback();
+            });
+        }.bind(this));
+    }
+};
+
+app.listen();

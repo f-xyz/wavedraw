@@ -39,24 +39,25 @@ define(['ngCtrls/app', 'modules/sandbox', 'modules/presetManager', 'models/rgba'
         };
 
 
-        $scope.preset = conf.preset;
-        $scope.presetMan = presetMan;
         $scope.presetName = '';
         $scope.save = function() {
             if ($scope.presetName) {
+                var size = { x: 100, y: 50 };
                 var canvas = document.getElementById('viewport');
                 var buffer = document.createElement('canvas');
                 var bufferCtx = buffer.getContext('2d');
-                bufferCtx.canvas.width = 100;
-                bufferCtx.canvas.height = 50;
+                bufferCtx.canvas.width = size.x;
+                bufferCtx.canvas.height = size.y;
                 bufferCtx.drawImage(
                     canvas,
                     0, 0, canvas.clientWidth, canvas.clientWidth / 2,
-                    0, 0, 100, 50
+                    0, 0, size.x, size.y
                 );
-                $scope.preset.preview = buffer.toDataURL();
-                alert($scope.preset.preview.length);
-                $scope.presetMan.add($scope.presetName, $scope.preset);
+                conf.preset.preview = buffer.toDataURL();
+                console.log('saving ' + $scope.presetName + ' / ' + conf.preset.preview.length);
+                presetMan.add($scope.presetName, conf.preset, function() {
+                    console.log('saved');
+                });
             }
         };
 
@@ -86,6 +87,10 @@ define(['ngCtrls/app', 'modules/sandbox', 'modules/presetManager', 'models/rgba'
 
         sandbox.on('*.toggleGallery', function() {
             $scope.$apply(function() { $scope.showGallery = !$scope.showGallery; });
+        });
+
+        sandbox.on('*.hidePanels', function() {
+            // todo
         });
     }]);
 

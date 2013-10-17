@@ -1,50 +1,44 @@
-define(['utils', 'conf'], function() {
+define(['utils', 'conf', 'jQuery'], function() {
     'use strict';
 
     var utils = require('utils');
     var conf = require('conf');
+    var $ = require('jQuery');
 
     var PresetsManager = utils.Class({
 
         constructor: function Presets() {
-            this.localStorageKey = 'presets';
-            this.presets = null;
+            this.presets = {
+                Default: conf.preset
+            };
             this.load();
         },
 
         load: function() {
-            try {
-                var json = localStorage.getItem(this.localStorageKey);
-                this.presets = JSON.parse(json);
-                if (!this.presets) {
-                    throw new Error('No presets!');
-                }
-            } catch (e) {
-                this.presets = {};
-                this.add('Default', conf.preset);
-                console.warn('[Presets] shit happens, defaults loaded');
-            }
-        },
-
-        save: function() {
-            var json = JSON.stringify(this.presets);
-            localStorage.setItem(this.localStorageKey, json);
+            console.log('loading...');
+            $.ajax({
+                method: 'GET',
+                url: '/presets',
+                dataType: 'json'
+            }).success(function(data) {
+                console.log('loaded');
+                console.log(data);
+                this.presets = data;
+            }.bind(this));
         },
 
         add: function(name, preset) {
             this.presets[name] = preset;
-            this.save();
-        },
-
-        remove: function(name) {
-            delete this.presets[name];
-            this.save();
-        },
-
-        clear: function() {
-            this.presets = null;
-            this.save();
-            this.load();
+            $.ajax({
+                method: 'POST',
+                url: '/presets/save',
+                data: {
+                    name: name,
+                    preset: preset
+                }
+            }).success(function(response) {
+                //
+            });
         }
     });
 
