@@ -2,6 +2,7 @@ require.config({
     baseUrl: 'app',
     paths: {
         domReady:       '../lib/requirejs-domready/domReady',
+        text:           '../lib/requirejs-text/text',
         sprintf:        '../lib/sprintf/src/sprintf',
         jQuery:         '../lib/jquery/jquery',
         jQueryUi:       '../lib/jquery-ui/ui/jquery-ui',
@@ -24,13 +25,15 @@ require.config({
     urlArgs: Date.now()
 });
 
-// ох уж этот ангуляр
+// angular manual bootstrapping
 window.name = "NG_DEFER_BOOTSTRAP!";
 
 require(
-    ['modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world',
-     'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
-     'modules/debug', 'modules/popup'],
+    [
+        'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/popup',
+        'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
+        'modules/debug'
+    ],
     function() {
         'use strict';
 
@@ -43,9 +46,9 @@ require(
 
         var sandbox = require('modules/sandbox');
         if (location.hash === '#/edit') {
-            sandbox.trigger('*.toggleControlPanel');
+            sandbox.trigger('ui.toggleControlPanel');
         } else if (location.hash === '#/gallery') {
-            sandbox.trigger('*.toggleGallery');
+            sandbox.trigger('ui.toggleGallery');
         } else {
             location.hash = '#/draw';
         }

@@ -3,27 +3,32 @@ define(['utils'], function() {
 
     var utils = require('utils');
 
-    var Rgba = utils.Class({
-        constructor: function Rgba(r, g, b, a) {
+    var RGBA = utils.Class({
+        constructor: function RGBA(r, g, b, a) {
             this.r = r;
             this.g = g;
             this.b = b;
             this.a = a;
         },
         mix: function(to, t) {
-            return new Rgba(
+            return new RGBA(
                 Math.floor(utils.mix(this.r, to.r, t)),
                 Math.floor(utils.mix(this.g, to.g, t)),
                 Math.floor(utils.mix(this.b, to.b, t)),
                 utils.mix(this.a, to.a, t)
             );
         },
-        toString: function(asHex) {
-            return asHex ?
-                utils.sprintf('#%(r)2x%(g)2x%(b)2x', this).replace(/\s/g, '0') :
-                utils.template('rgba({r},{g},{b},{a})', this);
+        toString: function(format) {
+            if (format === RGBA.FORMAT_HEX) {
+                return utils.sprintf('#%(r)2x%(g)2x%(b)2x', this).replace(/\s/g, '0');
+            } else { // RGBA.FORMAT_RGBA
+                return utils.template('rgba({r},{g},{b},{a})', this);
+            }
         }
     });
 
-    return Rgba;
+    RGBA.FORMAT_RGBA = 'rgba';
+    RGBA.FORMAT_HEX = 'hex';
+
+    return RGBA;
 });

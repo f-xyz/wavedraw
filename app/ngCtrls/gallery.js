@@ -1,26 +1,30 @@
-define(['ngCtrls/app', 'modules/sandbox', 'modules/presetManager'], function() {
+define(['conf', 'modules/presetManager', 'ngCtrls/app'], function() {
+    'use strict';
 
-    var sandbox = require('modules/sandbox');
+    var conf = require('conf');
     var presetMan = require('modules/presetManager');
     var waveDrawApp = require('ngCtrls/app');
 
-    waveDrawApp.controller('galleryCtrl', ['$scope', function($scope) {
-        $scope.showGallery = false;
-        $scope.presets = presetMan.presets;
+    waveDrawApp.controller('galleryCtrl', [
+        '$scope', 'sandbox',
+        function($scope, sandbox) {
 
-        $scope.select = function(name) {
-            var preset = $scope.presets[name];
-            if (preset) {
-                $scope.showGallery = false;
-                sandbox.trigger('gallery.presetSelected', {
-                    name: name,
-                    preset: preset
-                });
-            }
-        };
+            $scope.showGallery = false;
+            $scope.presets = presetMan.presets;
 
-        sandbox.on('*.toggleGallery', function() {
-            $scope.$apply(function() {
+            $scope.select = function(name) {
+                var preset = $scope.presets[name];
+                if (preset) {
+                    conf.preset = preset;
+                    sandbox.trigger('ui.toggleGallery');
+                    sandbox.trigger('ui.presetSelected', {
+                        name: name,
+                        preset: preset
+                    });
+                }
+            };
+
+            sandbox.on('ui.toggleGallery', function() {
                 $scope.showGallery = !$scope.showGallery;
                 if ($scope.showGallery) {
                     location.hash = '#/gallery';
@@ -28,7 +32,7 @@ define(['ngCtrls/app', 'modules/sandbox', 'modules/presetManager'], function() {
                     location.hash = '#/';
                 }
             });
-        });
-    }]);
+        }
+    ]);
 
 });

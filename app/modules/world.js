@@ -15,7 +15,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/wave'], function() {
 
             sandbox.on('domEvents.add', this.add.bind(this));
             sandbox.on('viewport.frame', this.frame.bind(this));
-            sandbox.on('*.reset', this.reset.bind(this));
+            sandbox.on('viewport.reset', this.reset.bind(this));
         },
 
         add: function(e) {

@@ -15,7 +15,7 @@ var app = {
     port: process.env.PORT || 5000,
     routes: [ /^\/(\w+)\/?(\w*)(.*)/ ],
 
-    listen: function() {
+    listen: function(port) {
         this.server = http.createServer(this.request.bind(this));
         this.server.listen(this.port);
         this.log('[main] started on port ' + this.port);
@@ -36,15 +36,19 @@ var app = {
 
             this.log('200 OK: ' + path);
             if (this.isDirectory(path)) {
-                var i, index;
+                var i, index, indexFound = false;
                 for (i in this.indexes) {
                     index = path + this.indexes[i];
                     if (fs.existsSync(index)) {
-                        this.processFile(response, index);
-                        return;
+                        indexFound = true;
+                        break;
                     }
                 }
-                this.processDirectory(response, path);
+                if (indexFound) {
+                    this.processFile(response, index);
+                } else {
+                    this.processDirectory(response, path);
+                }
             } else {
                 this.processFile(response, path);
             }
@@ -59,10 +63,9 @@ var app = {
     },
 
     isForbidden: function(path) {
-        return false;
-//        return this.forbidden.some(function(regExp) {
-//            return regExp.test(path);
-//        });
+        return this.forbidden.some(function(regExp) {
+            return regExp.test(path);
+        });
     },
 
     isDirectory: function(path) {
@@ -75,12 +78,13 @@ var app = {
         var fileList = fs.readdirSync(path);
         fileList.unshift('..');
 
-        var linkify = function(path) {
-            return '<a href="">' + path + '</a>'
-        };
-        var list = fileList.reduce(function(prev, cur) {
-            return linkify(prev) + '<br>\n' + linkify(cur);
-        });
+        var list = fileList
+            .map(function(file) {
+                return '<a href="/' + path + file +  '">' + file + '</a>'
+             })
+            .reduce(function(prev, cur) {
+                return prev + '<br>\n' + cur;
+            });
 
         response.write('Directory: ' + path + '<br>\n' + list);
         response.end('\n');
@@ -151,51 +155,95 @@ var controllers = {
             var post = '';
             request.addListener('data', function(chunk) { post += chunk; });
             request.addListener('end', function() {
-                post = qs.parse(post);
-                presets.save(post.name, post.preset, function() {
+                post = JSON.parse(post);
+                presets.save(post.name, post.preset, function(newName, oldPreset, updating) {
                     response.writeHead(200, {'Content-Type': 'text/json'});
-                    response.write(JSON.stringify({ok: true}));
-                    response.end('\n');
+                    response.write(JSON.stringify({
+                        newName: newName,
+                        oldPreset: oldPreset,
+                        updating: updating
+                    }));
+                    response.end();
                 });
             });
         }
     },
-    download: function(request, response) {
-        var post = '';
-        request.addListener('data', function(chunk) { post += chunk; });
-        request.addListener('end', function() {
-            post = qs.parse(post);
-            response.writeHead(200, {'Content-Type': 'text/plain'});
-            response.write(post);
-            response.end();
-        });
+    download: {
+        index: function(request, response) {
+            var post = '';
+            request.addListener('data', function(chunk) { post += chunk; });
+            request.addListener('end', function() {
+                post = qs.parse(post);
+                response.writeHead(200, {'Content-Type': 'text/plain'});
+                response.write(post);
+                response.end();
+            });
+        }
     }
 };
 
 var presets = {
     dbPath: 'db/presets.json',
+    dbPathOriginal: 'db/presets.orig.json',
     presets: null,
     load: function(callback) {
         if (this.presets) {
+
             callback(this.presets);
+
         } else {
+
             fs.readFile(this.dbPath, function(err, file) {
                 if (err) throw new Error(err);
+
                 this.presets = JSON.parse(file);
-                callback(this.presets);
+
+                if (Object.keys(this.presets) > 0) {
+                    callback(this.presets);
+                } else {
+                    fs.readFile(this.dbPathOriginal, function(err, file) {
+                        if (err) throw new Error(err);
+                        this.presets = JSON.parse(file);
+                        callback(this.presets);
+                    }.bind(this));
+                }
+
             }.bind(this));
         }
     },
+
     save: function(name, preset, callback) {
         this.load(function() {
-            this.presets[name] = preset;
+            var oldPreset = this.presets[name];
+            var newName = this._findName(name);
+
+            preset.creationDate = Date.now();
+            this.presets[newName] = preset;
+
             var json = JSON.stringify(this.presets);
             fs.writeFile(this.dbPath, json, function(err) {
                 if (err) throw new Error(err);
-                callback();
-            });
+                setTimeout(function() {
+                    callback(newName, oldPreset, name != newName);
+                }, 2000);
+            }.bind(this));
+
         }.bind(this));
+    },
+
+    _findName: function(name) {
+        var regExp = /\d+$/;
+        while (name in this.presets) {
+            if (!regExp.test(name)) {
+                name += '-' + 1;
+            } else {
+                name = name.replace(regExp, function(revision) {
+                    return parseInt(revision) + 1;
+                });
+            }
+        }
+        return name;
     }
 };
 
-app.listen();
+app.listen(null);

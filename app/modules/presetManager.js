@@ -1,44 +1,38 @@
-define(['utils', 'conf', 'jQuery'], function() {
+define(['utils', 'conf', 'jQuery', 'angular', 'text!/../db/presets.json'], function() {
     'use strict';
 
     var utils = require('utils');
     var conf = require('conf');
     var $ = require('jQuery');
+    var angular = require('angular');
+
+    var presets = require('text!/../db/presets.json');
+    presets = JSON.parse(presets);
 
     var PresetsManager = utils.Class({
 
         constructor: function Presets() {
-            this.presets = {
-                Default: conf.preset
-            };
-            this.load();
+            this.presets = presets;
         },
 
-        load: function() {
-            console.log('loading...');
-            $.ajax({
-                method: 'GET',
-                url: '/presets',
-                dataType: 'json'
-            }).success(function(data) {
-                console.log('loaded');
-                console.log(data);
-                this.presets = data;
-            }.bind(this));
-        },
-
-        add: function(name, preset) {
+        save: function(name, preset, callback) {
             this.presets[name] = preset;
+
             $.ajax({
                 method: 'POST',
                 url: '/presets/save',
-                data: {
+                dataType: 'json',
+                data: angular.toJson({
                     name: name,
                     preset: preset
-                }
+                })
             }).success(function(response) {
-                //
-            });
+                if (response.updating) {
+                    this.presets[name] = response.oldPreset;
+                    this.presets[response.newName] = preset;
+                }
+                callback(response);
+            }.bind(this));
         }
     });
 

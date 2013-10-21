@@ -5,22 +5,29 @@ define(
     function() {
         'use strict';
 
+        window.console = console || {
+            log: function() {},
+            dir: function() {}
+        };
+
         var conf = require('conf');
-        if (conf.debug > 0) {
-            window.conf = require('conf');
+        if (conf.debug >= 1) {
+
+            console.log('debug enabled!');
+
             window.utils = require('utils');
+            window.conf = require('conf');
             window.sandbox = require('modules/sandbox');
             window.viewport = require('modules/viewport');
             window.domEvents = require('modules/domEvents');
             window.world = require('modules/world');
-            window.popup = require('modules/popup');
             window.presetMan = require('modules/presetManager');
-        }
-        if (conf.debug > 1) {
+            window.popup = require('modules/popup');
+
             var sandbox = require('modules/sandbox');
-            sandbox.debug(function(e) {
-                if (e.__event !== 'viewport.frame' || conf.debug > 2) {
-                    console.log(e);
+            sandbox.onAll(function(event) {
+                if (conf.debug >= 2) {
+                    console.log('*', event, Array.prototype.slice.call(arguments, 1));
                 }
             });
         }

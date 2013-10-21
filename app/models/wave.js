@@ -9,7 +9,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
     var utils = require('utils');
     var conf = require('conf');
     var processing = require('models/processing');
-    var Rgba = require('models/rgba');
+    var RGBA = require('models/rgba');
 
     var abssine = function(f) {
         return Math.abs(Math.sin(f / 2));
@@ -41,7 +41,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
             var r = preset.r;
             var g = preset.g;
             var b = preset.b;
-            this.color = new Rgba(
+            this.color = new RGBA(
                 ~~utils.mix(r.range[0], r.range[1], abssine(time*r.velocity + r.phase/180*Math.PI)),
                 ~~utils.mix(g.range[0], g.range[1], abssine(time*g.velocity + g.phase/180*Math.PI)),
                 ~~utils.mix(b.range[0], b.range[1], abssine(time*b.velocity + b.phase/180*Math.PI)),

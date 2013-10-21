@@ -7,20 +7,20 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
 
     var Popup = utils.Class({
         constructor: function Popup() {
-            console.log('constructor');
+            console.log('constructor', event, []);
         },
         initialize: function() {
-            console.log('initialize');
+            console.log('initialize', event, []);
         }
     });
 
 //    return new Popup();
     return {
         constructor: function Popup() {
-            console.log('constructor');
+            console.log('constructor', event, []);
         },
         initialize: function() {
-            console.log('initialize');
+            console.log('initialize', event, []);
         }
     };
 });

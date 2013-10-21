@@ -8,7 +8,7 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
     var Viewport = utils.Class({
 
         constructor: function Viewport() {
-            this.canvas = document.querySelector('#viewport');
+            this.canvas = document.getElementById('viewport');
             this.context = this.canvas.getContext('2d');
             this.context.globalCompositeOperation = 'lighter';
 
@@ -20,9 +20,9 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
             sandbox.on('world.stop', function() {
                 conf.preset.persistence ? this.stop() : this.reset();
             }.bind(this));
-            sandbox.on('*.toggle', this.toggle.bind(this));
-            sandbox.on('*.reset', this.reset.bind(this));
-            sandbox.on('*.fullScreen', this.fullScreen.bind(this));
+            sandbox.on('viewport.toggle', this.toggle.bind(this));
+            sandbox.on('viewport.reset', this.reset.bind(this));
+            sandbox.on('viewport.fullScreen', this.fullScreen.bind(this));
 
             this.onResize();
         },
@@ -125,7 +125,7 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
         },
 
         fullScreen: function() {
-            // OMG
+            // OMG :E
             if (!document.fullscreenElement
             &&  !document.webkitFullscreenElement
             &&  !document.mozFullScreenElement

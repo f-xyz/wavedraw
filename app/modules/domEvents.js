@@ -23,16 +23,16 @@ define(['utils', 'modules/sandbox', 'modules/viewport', 'modules/world'], functi
         onKeypress: function(e) {
             if (e.keyCode === 32 && world.objects.length) {
                 e.preventDefault();
-                sandbox.trigger('*.toggle');
-            } else if (e.keyCode === 67 && e.ctrlKey && !e.shiftKey) { // c
-                e.preventDefault();
-                sandbox.trigger('*.toggleControlPanel');
-            } else if (e.keyCode === 71 && e.ctrlKey) { // g
-                e.preventDefault();
-                sandbox.trigger('*.toggleGallery');
+                sandbox.trigger('viewport.toggle');
             } else if (e.keyCode === 90 && e.ctrlKey) { // z
                 e.preventDefault();
-                sandbox.trigger('*.reset');
+                sandbox.trigger('viewport.reset');
+            } else if (e.keyCode === 67 && e.ctrlKey && !e.shiftKey) { // c
+                e.preventDefault();
+                sandbox.trigger('ui.toggleControlPanel');
+            } else if (e.keyCode === 71 && e.ctrlKey) { // g
+                e.preventDefault();
+                sandbox.trigger('ui.toggleGallery');
             }
         },
 
@@ -43,11 +43,11 @@ define(['utils', 'modules/sandbox', 'modules/viewport', 'modules/world'], functi
             });
         },
 
-        onMouseDown: function(e) {
+        onMouseDown: function() {
             this.drawing = true;
         },
 
-        onMouseUp: function(e) {
+        onMouseUp: function() {
             this.drawing = false;
         },
 
@@ -57,7 +57,7 @@ define(['utils', 'modules/sandbox', 'modules/viewport', 'modules/world'], functi
             }
         },
 
-        onMouseOut: function(e) {
+        onMouseOut: function() {
             this.drawing = false;
         },
 

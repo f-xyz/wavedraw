@@ -113,10 +113,11 @@ hr {
     color: #999;
     background: rgba(85, 85, 85, 0.2);
     font-size: 14px; }
+
 .toolbar .save {
     position: absolute;
     left: 600px; top: 5px; }
-.toolbar input[type=text] {
+.toolbar .save input[type=text] {
     width: 160px; height: 22px;
     padding: 0 7px;
     font-size: 10px;
@@ -124,17 +125,27 @@ hr {
     border: none; border-radius: 5px;
     transition: 0.6s;
     outline: none; }
-.toolbar input[type=text]:focus {
+.toolbar .save input[type=text]:focus {
     color: #222; background: #aaa;
     box-shadow: 0 0 3px #09c; }
-.toolbar button {
+.toolbar .save button {
     position: absolute;
     right: -58px; top: 0;
     height: 22px;
     line-height: 4px;
     font-size: 12px;
     outline: none; }
-.toolbar button:focus { outline: none; }
+.toolbar .save button:focus { outline: none; }
+
+.toolbar img.working {
+    position: absolute;
+    width: 60px;
+    left: 840px; top: 12px; }
+.toolbar img.done {
+    position: absolute;
+    width: 36px;
+    left: 840px; top: 12px; }
+
 .toolbar a {
     color: #09c;
     outline: none;
@@ -213,12 +224,13 @@ span.pause {
 .gallery .preset.selected { border-color: #09c; box-shadow: 3px 3px 3px #069; }
 .gallery .preset .body {
     position: relative;
-    /*overflow: hidden;*/
+    line-height: 100px;
 }
 .gallery .name {
     position: absolute;
-    left: 0; top: 10px;
+    left: 0; top: 0;
     width: 100%;
+    line-height: 40px;
     text-align: center;
     font-size: 14px;
     color: white;

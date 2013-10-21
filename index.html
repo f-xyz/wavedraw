@@ -17,36 +17,38 @@
 
     <div class="toolbar" ng-controller="toolbarCtrl">
         <span class="{{getControlPanelStateClass()}}"></span>
-        <a href="" title="{Ctrl+C}" onclick="sandbox.trigger('*.toggleControlPanel')">Controls</a>
+        <a href="" title="{Ctrl+C}" ng-click="toggleControlPanel()">Controls</a>
         &nbsp;
 
         <span class="{{getGalleryStateClass()}}"></span>
-        <a href="" title="{Ctrl+G}" onclick="sandbox.trigger('*.toggleGallery')">Gallery</a>
+        <a href="" title="{Ctrl+G}" ng-click="toggleGallery()">Gallery</a>
         &nbsp;
 
-        <a download="image.png" href="" target="_blank"
+        <a download="image.png" href="" target="_blank" title="May crash Chrome :E"
            onclick="this.setAttribute('href', document.getElementById('viewport').toDataURL());">Download</a>
         &nbsp;
 
-        <a href="" title="{F11}" onclick="sandbox.trigger('*.fullScreen')">Full screen</a>
+        <a href="" title="{F11}" ng-click="fullScreen()">Full screen</a>
         &nbsp;
 
-        <a href="" onclick="sandbox.trigger('*.share')">Share!</a>
-        &nbsp;
-
-        <a href="" title="{Ctrl+Z}" class="clear" onclick="sandbox.trigger('*.reset')">Clear</a>
+        <a href="" title="{Ctrl+Z}" class="clear" ng-click="reset()">Clear</a>
         &nbsp;
 
         <span class="pause" ng-show="running && particles"></span>
-        <a href="" title="{Space}" class="pause" onclick="sandbox.trigger('*.toggle')" ng-show="running && particles">Pause</a>
+        <a href="" title="{Space}" class="pause" ng-click="toggle()" ng-show="running && particles">Pause</a>
         <span class="resume" ng-show="!running && particles"></span>
-        <a href="" title="{Space}" class="resume" onclick="sandbox.trigger('*.toggle')" ng-show="!running && particles">Resume</a>
+        <a href="" title="{Space}" class="resume" ng-click="toggle()" ng-show="!running && particles">Resume</a>
         &nbsp;
 
         <div class="save">
-            <input type="text" placeholder="preset name" ng-model="presetName" ng-keypress="keypress()" />
-            <button class="btn btn-primary" ng-disabled="!presetName" ng-click="save()">Save</button>
+            <form ng-submit="save()">
+                <input type="text" placeholder="preset name" ng-model="presetName" />
+                <button class="btn btn-primary" type="submit" ng-disabled="!presetName">Save</button>
+            </form>
         </div>
+
+        <img class="working" src="working.gif" ng-show="working" />
+        <img class="done" src="done.gif" ng-show="done" />
 
         <div class="pull-right indicator {{getIndicatorClass()}}"></div>
         <div class="pull-right particles {{getIndicatorClass()}}">{{particles}} particles</div>

@@ -12,9 +12,7 @@ define(['sprintf'], function() {
     utils.Class = function(map) {
         var key;
         var constructor = map.constructor || function() {};
-        var prototype = map.extends ?
-                        Object.create(map.extends.prototype) :
-                        {};
+        var prototype = map.extends ? Object.create(map.extends.prototype) : {};
 
         for (key in map) {
             if (map.hasOwnProperty(key)) {
@@ -30,15 +28,7 @@ define(['sprintf'], function() {
             }
         }
 
-//        console.log(constructor.prototype === prototype);
-//        console.log(prototype.constructor === constructor);
-
         constructor.prototype = prototype;
-        prototype.constructor = constructor;
-
-//        console.log(constructor.prototype === prototype);
-//        console.log(prototype.constructor === constructor);
-//        console.log('-------------------------------');
 
         return constructor;
     };
@@ -98,6 +88,17 @@ define(['sprintf'], function() {
     };
 
     /**
+     *
+     * @param {number} value
+     * @param {number} min
+     * @param {number} max
+     * @returns {number}
+     */
+    utils.limit = function(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    };
+
+    /**
      * Linear interpolation.
      * @param {number} min
      * @param {number} max
@@ -115,41 +116,68 @@ define(['sprintf'], function() {
     utils.EventEmitter = utils.Class({
         constructor: function EventEmitter() {
             this.events = {};
+            this.allCallbacks = [];
         },
-        on: function(event, fn) {
+
+        on: function(event, callback) {
             if (!this.events[event]) {
                 this.events[event] = [];
             }
-            this.events[event].push(fn);
+            this.events[event].push(callback);
         },
-        off: function(event, fn) {
-            if (this.events[event]) {
-                if (fn) {
-                    var index = this.events[event].indexOf(fn);
-                    this.events[event].splice(index, 1);
-                } else {
-                    this.events[event] = [];
+
+        once: function(event, callback) {
+            var onceCallback = function() {
+                callback.apply(this, arguments);
+                this.off(event, onceCallback);
+            };
+            this.on(event, onceCallback);
+        },
+
+        onMap: function(map) {
+            for (var event in map) {
+                if (map.hasOwnProperty(event)) {
+                    this.on(event, map[event]);
                 }
             }
         },
-        trigger: function(event, data) {
+
+        off: function(event, callback) {
             if (this.events[event]) {
-                var subscribers = this.events[event];
-                if (data === undefined || data === null) {
-                    data = {};
+                if (callback) {
+                    var index = this.events[event].indexOf(callback);
+                    this.events[event].splice(index, 1);
+                } else {
+                    delete this.events[event];
                 }
-                data.__event = event;
-                for (var i in subscribers) {
-                    if (subscribers[i].call(this, data) === false) {
+            }
+        },
+
+        trigger: function(event/*, data*/) {
+            var i;
+            var args;
+            var subscribers = this.events[event];
+            var debugCallbacks = this.allCallbacks;
+
+            for (i in debugCallbacks) {
+                if (debugCallbacks.hasOwnProperty(i)) {
+                    debugCallbacks[i].apply(this, arguments);
+                }
+            }
+
+            if (subscribers) {
+                args = Array.prototype.slice.call(arguments, 1);
+                for (i in subscribers) {
+                    if (subscribers.hasOwnProperty(i)
+                    &&  subscribers[i].apply(this, args) === false) {
                         break;
                     }
                 }
             }
         },
-        debug: function(fn) {
-            for (var event in this.events) {
-                this.events[event].unshift(fn);
-            }
+
+        onAll: function(callback) {
+            this.allCallbacks.push(callback);
         }
     });
 
