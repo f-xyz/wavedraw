@@ -21,7 +21,7 @@ define(['utils', 'modules/sandbox', 'modules/viewport', 'modules/world'], functi
         },
 
         onKeypress: function(e) {
-            if (e.keyCode === 32 && world.objects.length) {
+            if (e.keyCode === 32 && e.ctrlKey && world.objects.length) { // space
                 e.preventDefault();
                 sandbox.trigger('viewport.toggle');
             } else if (e.keyCode === 90 && e.ctrlKey) { // z

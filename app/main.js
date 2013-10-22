@@ -39,6 +39,16 @@ require([
             e.preventDefault();
         });
 
+        (function loading(opacity) {
+            var node = document.querySelector('.overlay');
+            if (opacity > 0) {
+                node.style.opacity = opacity;
+                setTimeout(function() { loading(opacity - 0.05); }, 10);
+            } else {
+                node.style.display = 'none';
+            }
+        })(1);
+
         var angular = require('angular');
         angular.bootstrap(angular.element(document.documentElement), ['waveDraw']);
 

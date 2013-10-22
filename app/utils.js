@@ -4,6 +4,56 @@ define(['sprintf'], function() {
     var utils = {};
 
     /**
+     *
+     * @param src
+     * @param dst
+     */
+    utils.clone = function(src, dst) {
+        dst = dst || {};
+        for (var key in src) {
+            if (src.hasOwnProperty(key)) {
+                var val = src[key];
+                if (typeof(val) === 'object') {
+                    utils.clone(val, dst[key] || {});
+                } else {
+                    dst[key] = val;
+                }
+            }
+        }
+        return dst;
+    };
+
+     window.o = {
+         'null': null,
+         'undefined': undefined,
+         'number': 123,
+         'string': 'abc',
+         'array': [1,{z:2},3],
+         'object': {
+             a: 1,
+             b: 2,
+             c: 3,
+             'subarray': [3,2,1],
+             'subobject': { q:1, w:2, e:3 }
+         },
+         'date': new Date(Date.now()),
+         'func': function() {}
+     };
+     window.o2 = utils.clone(window.o);
+
+    (function cloneTest(src, dst) {
+        for (var key in src) {
+            if (src.hasOwnProperty(key)) {
+                var val = src[key];
+                if (typeof(val) === 'object' && val === dst[key]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    })(window.o, window.o2);
+
+    /**
      * @param {object} map
      * @param {object} [map.extends]
      * @param {object} [map.mixin]
@@ -20,21 +70,12 @@ define(['sprintf'], function() {
             }
         }
 
-        if (map.mixin) {
-            for (key in map.mixin) {
-                if (map.mixin.hasOwnProperty(key)) {
-                    prototype[key] = map.mixin[key];
-                }
-            }
-        }
-
         constructor.prototype = prototype;
 
         return constructor;
     };
 
     /**
-     * Микро-темплейты.
      * abc{0}de{1}f + ['@', '#] => 'abc@de#f'
      * abc{fst}de{snd}f + { fst: '@' } => 'abc@de{snd}f'
      * @param {string} string
@@ -63,7 +104,6 @@ define(['sprintf'], function() {
     utils.callStack = function() {
         try {
             new Error('###');
-            return [];
         } catch (e) {
             return e.stack.replace(/[ ]{2,}/g, '').split(/\n/).slice(1);
         }

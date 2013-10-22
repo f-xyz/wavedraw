@@ -22,6 +22,19 @@ hr {
 .green { color: #0f0; }
 .blue { color: #00b; }
 
+[ng-cloak] { display: none; }
+
+.overlay {
+    position: fixed;
+    left: 0; top: 0; z-index: 100;
+    width: 100%; height: 100%;
+    background: black; }
+.overlay .body {
+    position: absolute;
+    width: 200px;
+    left: 50%; top: 50%;
+    margin-left: -100px; margin-top: -20px; }
+
 /* Control panel *****************************************/
 
 .control-panel {

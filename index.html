@@ -15,7 +15,13 @@
 </head>
 <body ng-app="waveDraw">
 
-    <div class="toolbar" ng-controller="toolbarCtrl">
+    <div class="overlay">
+        <div class="body">
+            <h3>Loading...</h3>
+        </div>
+    </div>
+
+    <div class="toolbar" ng-controller="toolbarCtrl" ng-cloak>
         <span class="{{getGalleryStateClass()}}"></span>
         <a href="" title="{Ctrl+G}" ng-click="toggleGallery()">Gallery</a>
         &nbsp;
@@ -35,9 +41,9 @@
         &nbsp;
 
         <span class="pause" ng-show="running && particles"></span>
-        <a href="" title="{Space}" class="pause" ng-click="toggle()" ng-show="running && particles">Pause</a>
+        <a href="" title="{Ctrl+Space}" class="pause" ng-click="toggle()" ng-show="running && particles">Pause</a>
         <span class="resume" ng-show="!running && particles"></span>
-        <a href="" title="{Space}" class="resume" ng-click="toggle()" ng-show="!running && particles">Resume</a>
+        <a href="" title="{Ctrl+Space}" class="resume" ng-click="toggle()" ng-show="!running && particles">Resume</a>
         &nbsp;
 
         <div class="save">
@@ -61,7 +67,7 @@
 
 
 
-    <div class="gallery clearfix" ng-controller="galleryCtrl" ng-show="showGallery">
+    <div class="gallery clearfix" ng-controller="galleryCtrl" ng-show="showGallery" ng-cloak>
         <div class="preset" ng-repeat="(name, preset) in presets">
             <div class="body {{selected}}" ng-click="select(name)">
                 <div class="name">{{name}}</div>
@@ -72,7 +78,7 @@
 
 
 
-    <div class="control-panel clearfix" ng-controller="controlPanelCtrl" ng-show="showControlPanel">
+    <div class="control-panel clearfix" ng-controller="controlPanelCtrl" ng-show="showControlPanel" ng-cloak>
 
         <div class="block hack">
             <h3>Drawing</h3>
@@ -93,11 +99,11 @@
         <div class="block">
             <h3>Particles</h3>
             <div class="slider" ui-slider="{ min: 1, max: 999 }" ng-model="preset.count">
-                <label>Number</label>
+                <label>Number (performance!)</label>
                 <input type="text" maxlength="3" ng-model="preset.count" />
             </div>
             <div class="slider" ui-slider="{ min: 1, max: 999 }" ng-model="preset.ttl">
-                <label>Lifetime (frames)</label>
+                <label>Lifetime (performance!)</label>
                 <input type="text" maxlength="3" ng-model="preset.ttl" />
             </div>
             <label>
