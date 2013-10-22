@@ -204,7 +204,7 @@ span.pause {
 /* Gallery ***********************************************/
 
 .gallery {
-    position: fixed;
+    position: absolute;
     top: 32px; z-index: 20;
     width: 100%;
     color: #666; background: #111;

@@ -16,12 +16,12 @@
 <body ng-app="waveDraw">
 
     <div class="toolbar" ng-controller="toolbarCtrl">
-        <span class="{{getControlPanelStateClass()}}"></span>
-        <a href="" title="{Ctrl+C}" ng-click="toggleControlPanel()">Controls</a>
-        &nbsp;
-
         <span class="{{getGalleryStateClass()}}"></span>
         <a href="" title="{Ctrl+G}" ng-click="toggleGallery()">Gallery</a>
+        &nbsp;
+
+        <span class="{{getControlPanelStateClass()}}"></span>
+        <a href="" title="{Ctrl+C}" ng-click="toggleControlPanel()">Controls</a>
         &nbsp;
 
         <a download="image.png" href="" target="_blank" title="May crash Chrome :E"

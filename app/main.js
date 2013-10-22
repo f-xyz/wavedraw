@@ -25,16 +25,14 @@ require.config({
     urlArgs: Date.now()
 });
 
-// angular manual bootstrapping
+// manual angular bootstrapping
 window.name = "NG_DEFER_BOOTSTRAP!";
 
-require(
-    [
-        'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/popup',
-        'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
-        'modules/debug'
-    ],
-    function() {
+require([
+    'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/popup',
+    'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
+    'modules/debug'
+    ], function() {
         'use strict';
 
         document.addEventListener('selectstart', function(e) {
