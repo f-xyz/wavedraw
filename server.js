@@ -34,7 +34,7 @@ var app = {
 
         } else if (fs.existsSync(path)) {
 
-            this.log('200 OK: ' + path);
+//            this.log('200 OK: ' + path);
             if (this.isDirectory(path)) {
                 var i, index, indexFound = false;
                 for (i in this.indexes) {
@@ -47,7 +47,10 @@ var app = {
                 if (indexFound) {
                     this.processFile(response, index);
                 } else {
-                    this.processDirectory(response, path);
+//                    this.processDirectory(response, path);
+                    message = '403 Forbidden';
+                    this.log(message + ': ' + path);
+                    this.error(response, 403, message);
                 }
             } else {
                 this.processFile(response, path);
@@ -57,7 +60,7 @@ var app = {
 
             message = '404 Not Found';
             this.log(message + ': ' + path);
-            this.error(response, 403, message);
+            this.error(response, 404, message);
 
         }
     },
@@ -80,7 +83,7 @@ var app = {
 
         var list = fileList
             .map(function(file) {
-                return '<a href="/' + path + file +  '">' + file + '</a>'
+                return '<a href="/' + path + '/' + file +  '">' + file + '</a>'
              })
             .reduce(function(prev, cur) {
                 return prev + '<br>\n' + cur;
@@ -121,11 +124,7 @@ var app = {
 //                            app.error(response, 500, e.message);
 //                        }
                         return true;
-                    } else {
-                        app.error(response, 500, 'No action: ' + parts[1] + '/' + parts[2]);
                     }
-                } else {
-                    app.error(response, 500, 'No controller: ' + parts[1]);
                 }
             }
         }
@@ -156,12 +155,11 @@ var controllers = {
             request.addListener('data', function(chunk) { post += chunk; });
             request.addListener('end', function() {
                 post = JSON.parse(post);
-                presets.save(post.name, post.preset, function(newName, oldPreset, updating) {
+                presets.save(post.name, post.preset, function(newName, oldPreset) {
                     response.writeHead(200, {'Content-Type': 'text/json'});
                     response.write(JSON.stringify({
                         newName: newName,
-                        oldPreset: oldPreset,
-                        updating: updating
+                        oldPreset: oldPreset
                     }));
                     response.end();
                 });
@@ -223,9 +221,7 @@ var presets = {
             var json = JSON.stringify(this.presets);
             fs.writeFile(this.dbPath, json, function(err) {
                 if (err) throw new Error(err);
-                setTimeout(function() {
-                    callback(newName, oldPreset, name != newName);
-                }, 2000);
+                callback(newName, oldPreset);
             }.bind(this));
 
         }.bind(this));

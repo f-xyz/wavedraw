@@ -48,6 +48,7 @@ define(['conf', 'modules/presetManager', 'models/rgba', 'ngCtrls/app'], function
             $scope.save = function() {
                 if ($scope.presetName) {
 
+                    // generate preview
                     var canvas = document.getElementById('viewport');
                     var srcSize = { x: canvas.clientWidth, y: canvas.clientHeight };
                     var dstSize = { x: 200, y: 200 / srcSize.x * srcSize.y };
@@ -62,14 +63,16 @@ define(['conf', 'modules/presetManager', 'models/rgba', 'ngCtrls/app'], function
                     );
                     conf.preset.preview = buffer.toDataURL();
 
+                    // show progress animation
                     $scope.working = true;
+
+                    // save
                     presetMan.save($scope.presetName, conf.preset, function(response) {
                         $scope.$apply(function() {
 
-                            if (response.updating) {
-                                $scope.presetName = response.newName;
-                            }
+                            $scope.presetName = response.newName;
 
+                            // hide progress animation
                             $scope.working = false;
                             $scope.done = true;
                             $timeout(function() {
