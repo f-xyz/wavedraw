@@ -115,8 +115,7 @@ var app = {
             if (parts) {
                 var controller = controllers[parts[1]];
                 if (controller) {
-                    var action = controller[parts[2]]
-                        || controller.index;
+                    var action = controller[parts[2]] || controller.index;
                     if (action) {
 //                        try {
                         action.call(controller, request, response, url);
@@ -155,11 +154,10 @@ var controllers = {
             request.addListener('data', function(chunk) { post += chunk; });
             request.addListener('end', function() {
                 post = JSON.parse(post);
-                presets.save(post.name, post.preset, function(newName, oldPreset) {
+                presets.save(post.name, post.preset, function(name) {
                     response.writeHead(200, {'Content-Type': 'text/json'});
                     response.write(JSON.stringify({
-                        newName: newName,
-                        oldPreset: oldPreset
+                        name: name
                     }));
                     response.end();
                 });
@@ -182,7 +180,6 @@ var controllers = {
 
 var presets = {
     dbPath: 'db/presets.json',
-    dbPathOriginal: 'db/presets.orig.json',
     presets: null,
     load: function(callback) {
         if (this.presets) {
@@ -193,35 +190,24 @@ var presets = {
 
             fs.readFile(this.dbPath, function(err, file) {
                 if (err) throw new Error(err);
-
                 this.presets = JSON.parse(file);
-
-                if (Object.keys(this.presets) > 0) {
-                    callback(this.presets);
-                } else {
-                    fs.readFile(this.dbPathOriginal, function(err, file) {
-                        if (err) throw new Error(err);
-                        this.presets = JSON.parse(file);
-                        callback(this.presets);
-                    }.bind(this));
-                }
-
+                callback(this.presets);
             }.bind(this));
+
         }
     },
 
     save: function(name, preset, callback) {
         this.load(function() {
-            var oldPreset = this.presets[name];
-            var newName = this._findName(name);
 
+            name = this._findName(name);
             preset.creationDate = Date.now();
-            this.presets[newName] = preset;
+            this.presets[name] = preset;
 
             var json = JSON.stringify(this.presets);
             fs.writeFile(this.dbPath, json, function(err) {
                 if (err) throw new Error(err);
-                callback(newName, oldPreset);
+                callback(name);
             }.bind(this));
 
         }.bind(this));

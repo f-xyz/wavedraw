@@ -7,14 +7,8 @@ define(['utils', 'conf', 'jQuery', 'angular'], function() {
         var angular = require('angular');
 
         var PresetsManager = utils.Class({
-
-            constructor: function Presets() {
-                this.presets = conf.presets;
-            },
-
+            constructor: function Presets() {},
             save: function(name, preset, callback) {
-                this.presets[name] = preset;
-
                 $.ajax({
                     method: 'POST',
                     url: '/presets/save',
@@ -24,8 +18,7 @@ define(['utils', 'conf', 'jQuery', 'angular'], function() {
                         preset: preset
                     })
                 }).success(function(response) {
-                    this.presets[name] = response.oldPreset;
-                    this.presets[response.newName] = preset;
+                    conf.presets[response.name] = preset;
                     callback(response);
                 }.bind(this));
             }

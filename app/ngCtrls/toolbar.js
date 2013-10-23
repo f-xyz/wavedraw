@@ -70,7 +70,7 @@ define(['conf', 'modules/presetManager', 'models/rgba', 'ngCtrls/app'], function
                     presetMan.save($scope.presetName, conf.preset, function(response) {
                         $scope.$apply(function() {
 
-                            $scope.presetName = response.newName;
+                            $scope.presetName = response.name;
 
                             // hide progress animation
                             $scope.working = false;

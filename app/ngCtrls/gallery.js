@@ -1,8 +1,8 @@
-define(['conf', 'modules/presetManager', 'ngCtrls/app'], function() {
+define(['utils', 'conf', 'ngCtrls/app'], function() {
     'use strict';
 
+    var utils = require('utils');
     var conf = require('conf');
-    var presetMan = require('modules/presetManager');
     var waveDrawApp = require('ngCtrls/app');
 
     waveDrawApp.controller('galleryCtrl', [
@@ -10,16 +10,16 @@ define(['conf', 'modules/presetManager', 'ngCtrls/app'], function() {
         function($scope, sandbox) {
 
             $scope.showGallery = false;
-            $scope.presets = presetMan.presets;
+            $scope.presets = conf.presets;
 
             $scope.select = function(name) {
                 var preset = $scope.presets[name];
                 if (preset) {
-                    conf.preset = preset;
+                    conf.preset = utils.clone(preset);
                     sandbox.trigger('ui.toggleGallery');
                     sandbox.trigger('ui.presetSelected', {
                         name: name,
-                        preset: preset
+                        preset: conf.preset
                     });
                 }
             };

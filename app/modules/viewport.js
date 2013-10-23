@@ -24,7 +24,7 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
             sandbox.on('viewport.reset', this.reset.bind(this));
             sandbox.on('viewport.fullScreen', this.fullScreen.bind(this));
 
-            this.onResize();
+            this.onResize(true);
         },
 
         initFpsCounter: function() {
@@ -33,7 +33,7 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
             this.framesProcessed = 0;
         },
 
-        onResize: function() {
+        onResize: function(initPhase) {
             this.canvas.style.width = window.innerWidth + 'px';
             this.canvas.style.height = window.innerHeight - this.canvas.offsetTop + 'px';
 
@@ -42,11 +42,21 @@ define(['utils', 'conf', 'modules/sandbox'], function() {
                 y: this.canvas.clientHeight
             };
 
+            if (!initPhase) {
+                var buffer = new Image();
+                buffer.src = this.canvas.toDataURL();
+            }
+
+            // resizing clears canvas
             this.context.canvas.width = this.size.x;
             this.context.canvas.height = this.size.y;
 
-            this.context.fillStyle = 'black';
-            this.context.fillRect(0, 0, this.size.x, this.size.y);
+            if (!initPhase) {
+                this.context.drawImage(
+                    buffer,
+                    0, 0, this.size.x, this.size.y
+                );
+            }
         },
 
         /////////////////////////////////////////////////////////
