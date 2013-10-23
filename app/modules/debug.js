@@ -1,7 +1,7 @@
 define(
     ['utils', 'conf',
     'modules/sandbox', 'modules/viewport', 'modules/domEvents',
-    'modules/world', 'modules/presetManager', 'modules/popup'],
+    'modules/world', 'modules/popup', 'services/backend'],
     function() {
         'use strict';
 
@@ -21,7 +21,7 @@ define(
             window.viewport = require('modules/viewport');
             window.domEvents = require('modules/domEvents');
             window.world = require('modules/world');
-            window.presetMan = require('modules/presetManager');
+            window.backend = require('services/backend');
             window.popup = require('modules/popup');
 
             var sandbox = require('modules/sandbox');

@@ -1,8 +1,8 @@
-define(['conf', 'modules/presetManager', 'models/rgba', 'angular', 'ngCtrls/app'], function() {
+define(['conf', 'services/backend', 'models/rgba', 'angular', 'ngCtrls/app'], function() {
     'use strict';
 
     var conf = require('conf');
-    var presetMan = require('modules/presetManager');
+    var backend = require('services/backend');
     var RGBA = require('models/rgba');
     var angular = require('angular');
     var waveDrawApp = require('ngCtrls/app');
@@ -68,7 +68,7 @@ define(['conf', 'modules/presetManager', 'models/rgba', 'angular', 'ngCtrls/app'
                     $scope.working = true;
 
                     // save
-                    presetMan.save($scope.presetName, conf.preset, function(response) {
+                    backend.save($scope.presetName, conf.preset, function(response) {
                         $scope.$apply(function() {
 
                             $scope.presetName = response.name;
