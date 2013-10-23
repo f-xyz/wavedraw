@@ -1,13 +1,11 @@
-define(['utils', 'conf', 'jQuery', 'angular'], function() {
+define(['conf', 'jQuery', 'angular'], function() {
         'use strict';
 
-        var utils = require('utils');
         var conf = require('conf');
         var $ = require('jQuery');
         var angular = require('angular');
 
-        var PresetsManager = utils.Class({
-            constructor: function Presets() {},
+        return {
             save: function(name, preset, callback) {
                 $.ajax({
                     method: 'POST',
@@ -21,9 +19,10 @@ define(['utils', 'conf', 'jQuery', 'angular'], function() {
                     conf.presets[response.name] = preset;
                     callback(response);
                 }.bind(this));
+            },
+            download: function(size, data, callback) {
+                //
             }
-        });
-
-        return new PresetsManager();
+        };
     }
 );

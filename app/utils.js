@@ -4,7 +4,7 @@ define(['sprintf'], function() {
     var utils = {};
 
     /**
-     *
+     * Simple cloning.
      * @param src
      * @param dst
      */
@@ -22,28 +22,6 @@ define(['sprintf'], function() {
             }
         }
         return dst;
-    };
-
-    /**
-     * @param {object} map
-     * @param {object} [map.extends]
-     * @param {object} [map.mixin]
-     * @returns {function}
-     */
-    utils.Class = function(map) {
-        var key;
-        var constructor = map.constructor || function() {};
-        var prototype = map.extends ? Object.create(map.extends.prototype) : {};
-
-        for (key in map) {
-            if (map.hasOwnProperty(key)) {
-                prototype[key] = map[key];
-            }
-        }
-
-        constructor.prototype = prototype;
-
-        return constructor;
     };
 
     /**
@@ -124,73 +102,71 @@ define(['sprintf'], function() {
      * @type {Function}
      * @class {EventEmitter}
      */
-    utils.EventEmitter = utils.Class({
-        constructor: function EventEmitter() {
-            this.events = {};
-            this.allCallbacks = [];
-        },
+    utils.EventEmitter = function EventEmitter() {
+        this.events = {};
+        this.allCallbacks = [];
+    };
 
-        on: function(event, callback) {
-            if (!this.events[event]) {
-                this.events[event] = [];
-            }
-            this.events[event].push(callback);
-        },
-
-        once: function(event, callback) {
-            var onceCallback = function() {
-                callback.apply(this, arguments);
-                this.off(event, onceCallback);
-            };
-            this.on(event, onceCallback);
-        },
-
-        onMap: function(map) {
-            for (var event in map) {
-                if (map.hasOwnProperty(event)) {
-                    this.on(event, map[event]);
-                }
-            }
-        },
-
-        off: function(event, callback) {
-            if (this.events[event]) {
-                if (callback) {
-                    var index = this.events[event].indexOf(callback);
-                    this.events[event].splice(index, 1);
-                } else {
-                    delete this.events[event];
-                }
-            }
-        },
-
-        trigger: function(event/*, data*/) {
-            var i;
-            var args;
-            var subscribers = this.events[event];
-            var debugCallbacks = this.allCallbacks;
-
-            for (i in debugCallbacks) {
-                if (debugCallbacks.hasOwnProperty(i)) {
-                    debugCallbacks[i].apply(this, arguments);
-                }
-            }
-
-            if (subscribers) {
-                args = Array.prototype.slice.call(arguments, 1);
-                for (i in subscribers) {
-                    if (subscribers.hasOwnProperty(i)
-                    &&  subscribers[i].apply(this, args) === false) {
-                        break;
-                    }
-                }
-            }
-        },
-
-        onAll: function(callback) {
-            this.allCallbacks.push(callback);
+    utils.EventEmitter.prototype.on = function(event, callback) {
+        if (!this.events[event]) {
+            this.events[event] = [];
         }
-    });
+        this.events[event].push(callback);
+    };
+
+    utils.EventEmitter.prototype.once = function(event, callback) {
+        var onceCallback = function() {
+            callback.apply(this, arguments);
+            this.off(event, onceCallback);
+        };
+        this.on(event, onceCallback);
+    };
+
+    utils.EventEmitter.prototype.onAll = function(callback) {
+        this.allCallbacks.push(callback);
+    };
+
+    utils.EventEmitter.prototype.onMap = function(map) {
+        for (var event in map) {
+            if (map.hasOwnProperty(event)) {
+                this.on(event, map[event]);
+            }
+        }
+    };
+
+    utils.EventEmitter.prototype.off = function(event, callback) {
+        if (this.events[event]) {
+            if (callback) {
+                var index = this.events[event].indexOf(callback);
+                this.events[event].splice(index, 1);
+            } else {
+                delete this.events[event];
+            }
+        }
+    };
+
+    utils.EventEmitter.prototype.trigger = function(event/*, data*/) {
+        var i;
+        var args;
+        var subscribers = this.events[event];
+        var debugCallbacks = this.allCallbacks;
+
+        for (i in debugCallbacks) {
+            if (debugCallbacks.hasOwnProperty(i)) {
+                debugCallbacks[i].apply(this, arguments);
+            }
+        }
+
+        if (subscribers) {
+            args = Array.prototype.slice.call(arguments, 1);
+            for (i in subscribers) {
+                if (subscribers.hasOwnProperty(i)
+                &&  subscribers[i].apply(this, args) === false) {
+                    break;
+                }
+            }
+        }
+    };
 
     return utils;
 });

@@ -169,9 +169,10 @@ var controllers = {
             var post = '';
             request.addListener('data', function(chunk) { post += chunk; });
             request.addListener('end', function() {
-                post = qs.parse(post);
-                response.writeHead(200, {'Content-Type': 'text/plain'});
-                response.write(post);
+//                post = JSON.parse(post);
+//                util.inspect(post);
+                response.writeHead(200, {'Content-Type': 'text/json'});
+                response.write({ ok: true });
                 response.end();
             });
         }

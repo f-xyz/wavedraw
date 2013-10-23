@@ -1,14 +1,15 @@
-define(['conf', 'modules/presetManager', 'models/rgba', 'ngCtrls/app'], function() {
+define(['conf', 'modules/presetManager', 'models/rgba', 'angular', 'ngCtrls/app'], function() {
     'use strict';
 
     var conf = require('conf');
     var presetMan = require('modules/presetManager');
     var RGBA = require('models/rgba');
+    var angular = require('angular');
     var waveDrawApp = require('ngCtrls/app');
 
     waveDrawApp.controller('toolbarCtrl', [
-        '$scope', '$timeout', 'sandbox',
-        function($scope, $timeout, sandbox) {
+        '$scope', '$timeout', '$http', 'sandbox',
+        function($scope, $timeout, $http, sandbox) {
 
             $scope.running = false;
             $scope.particles = 0;
@@ -81,6 +82,24 @@ define(['conf', 'modules/presetManager', 'models/rgba', 'ngCtrls/app'], function
                         });
                     });
                 }
+            };
+
+            $scope.download = function() {
+                var screenSize = {
+                    x: screen.width,
+                    y: screen.height
+                };
+                //
+                var canvas = document.getElementById('viewport');
+                var data = {
+//                    data: canvas.toDataURL(),
+                    size: screenSize
+                };
+                data = angular.toJson(data);
+                console.log(data);
+                $http.post('/download', data).success(function(response) {
+                    console.log(response);
+                });
             };
 
             sandbox.on('ui.toggleControlPanel', function() { $scope.showControlPanel = !$scope.showControlPanel; });
