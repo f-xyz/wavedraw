@@ -1,5 +1,7 @@
-define([], function() {
+define(['utils'], function() {
     'use strict';
+
+    var utils = require('utils');
 
     function RGBA(r, g, b, a) {
         this.r = r;

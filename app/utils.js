@@ -5,8 +5,9 @@ define(['sprintf'], function() {
 
     /**
      * Simple cloning.
-     * @param src
-     * @param dst
+     * @param {object} src
+     * @param {object} [dst]
+     * @returns {object} dst
      */
     utils.clone = function(src, dst) {
         dst = dst || {};
@@ -53,6 +54,7 @@ define(['sprintf'], function() {
     utils.callStack = function() {
         try {
             new Error('###');
+            return [];
         } catch (e) {
             return e.stack.replace(/[ ]{2,}/g, '').split(/\n/).slice(1);
         }
@@ -65,15 +67,6 @@ define(['sprintf'], function() {
      */
     utils.randomEx = function(min, max) {
         return min + (max - min) * Math.random();
-    };
-
-    /**
-     * @param {number} min
-     * @param {number} max
-     * @returns {number}
-     */
-    utils.randomInt = function(min, max) {
-        return ~~(utils.randomEx(min, max+1));
     };
 
     /**

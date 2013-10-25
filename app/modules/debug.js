@@ -1,7 +1,7 @@
 define(
     ['utils', 'conf',
     'modules/sandbox', 'modules/viewport', 'modules/domEvents',
-    'modules/world', 'modules/popup', 'services/backend'],
+    'modules/world', 'modules/splash', 'services/backend'],
     function() {
         'use strict';
 
@@ -22,7 +22,7 @@ define(
             window.domEvents = require('modules/domEvents');
             window.world = require('modules/world');
             window.backend = require('services/backend');
-            window.popup = require('modules/popup');
+            window.splash = require('modules/splash');
 
             var sandbox = require('modules/sandbox');
             sandbox.onAll(function(event) {

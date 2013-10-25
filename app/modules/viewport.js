@@ -49,9 +49,11 @@ define(['conf', 'modules/sandbox'], function() {
         this.context.canvas.height = this.size.y;
 
         if (!initPhase) {
+            this.context.fillStyle = 'black';
+            this.context.fillRect(0, 0, this.size.x, this.size.y);
             this.context.drawImage(
                 buffer,
-                0, 0, this.size.x, this.size.y
+                0, 0, buffer.width, buffer.height
             );
         }
     };

@@ -6,7 +6,7 @@ define(['modules/sandbox', 'modules/viewport', 'modules/world'], function() {
     var world = require('modules/world');
 
     function DomEvents() {
-        document.addEventListener('keydown', this.onKeypress.bind(this));
+        window.addEventListener('keydown', this.onKeypress.bind(this));
         window.addEventListener('resize', this.onResize.bind(this));
 
         this.drawing = false;
@@ -30,6 +30,9 @@ define(['modules/sandbox', 'modules/viewport', 'modules/world'], function() {
         } else if (e.keyCode === 71 && e.ctrlKey) { // g
             e.preventDefault();
             sandbox.trigger('ui.toggleGallery');
+        } else if (e.keyCode === 83 && e.ctrlKey) { // s
+            e.preventDefault();
+            sandbox.trigger('ui.download');
         }
     };
 

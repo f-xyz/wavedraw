@@ -15,11 +15,13 @@
 </head>
 <body ng-app="waveDraw">
 
-    <div class="overlay">
+    <div id="overlay">
         <div class="body">
-            <h3>Loading...</h3>
+            <h1>Loading...</h1>
         </div>
     </div>
+
+
 
     <div class="toolbar" ng-controller="toolbarCtrl" ng-cloak>
         <span class="{{getGalleryStateClass()}}"></span>
@@ -34,7 +36,7 @@
            onclick="this.setAttribute('href', document.getElementById('viewport').toDataURL());">Download</a>
         &nbsp;-->
 
-        <a href="" ng-click="download()">Download</a>
+        <a href="" title="{Ctrl+S}" ng-click="download()">Download</a>
         &nbsp;
 
         <a href="" title="{F11}" ng-click="fullScreen()">Full screen</a>
@@ -215,6 +217,12 @@
         </div>
 
     </div>
+
+
+
+    <iframe id="download-iframe" style="display: none;"></iframe>
+
+
 
     <script data-main="app/main" src="lib/requirejs/require.js"></script>
     <script>

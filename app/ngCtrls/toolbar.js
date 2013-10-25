@@ -1,15 +1,14 @@
-define(['conf', 'services/backend', 'models/rgba', 'angular', 'ngCtrls/app'], function() {
+define(['conf', 'models/rgba', 'services/backend', 'ngCtrls/app'], function() {
     'use strict';
 
     var conf = require('conf');
-    var backend = require('services/backend');
     var RGBA = require('models/rgba');
-    var angular = require('angular');
+    var backend = require('services/backend');
     var waveDrawApp = require('ngCtrls/app');
 
     waveDrawApp.controller('toolbarCtrl', [
-        '$scope', '$timeout', '$http', 'sandbox',
-        function($scope, $timeout, $http, sandbox) {
+        '$scope', '$timeout', '$location', 'sandbox',
+        function($scope, $timeout, $location, sandbox) {
 
             $scope.running = false;
             $scope.particles = 0;
@@ -48,60 +47,28 @@ define(['conf', 'services/backend', 'models/rgba', 'angular', 'ngCtrls/app'], fu
             $scope.presetName = '';
             $scope.save = function() {
                 if ($scope.presetName) {
-
-                    // generate preview
-                    var canvas = document.getElementById('viewport');
-                    var srcSize = { x: canvas.clientWidth, y: canvas.clientHeight };
-                    var dstSize = { x: 200, y: 200 / srcSize.x * srcSize.y };
-                    var buffer = document.createElement('canvas');
-                    var bufferCtx = buffer.getContext('2d');
-                    bufferCtx.canvas.width = dstSize.x;
-                    bufferCtx.canvas.height = dstSize.y;
-                    bufferCtx.drawImage(
-                        canvas,
-                        0, 0, srcSize.x, srcSize.y,
-                        0, 0, dstSize.x, dstSize.y
-                    );
-                    conf.preset.preview = buffer.toDataURL();
-
-                    // show progress animation
                     $scope.working = true;
 
-                    // save
-                    backend.save($scope.presetName, conf.preset, function(response) {
+                    backend.savePreset($scope.presetName, conf.preset, function(name) {
                         $scope.$apply(function() {
 
-                            $scope.presetName = response.name;
+                            $scope.presetName = name;
 
-                            // hide progress animation
                             $scope.working = false;
                             $scope.done = true;
-                            $timeout(function() {
-                                $scope.done = false;
-                            }, 1000);
+                            $timeout(function() { $scope.done = false; }, 1000);
                         });
                     });
                 }
             };
 
+            // download PNG
             $scope.download = function() {
-                var screenSize = {
-                    x: screen.width,
-                    y: screen.height
-                };
-                //
-                var canvas = document.getElementById('viewport');
-                var data = {
-//                    data: canvas.toDataURL(),
-                    size: screenSize
-                };
-                data = angular.toJson(data);
-                console.log(data);
-                $http.post('/download', data).success(function(response) {
-                    console.log(response);
-                });
+                backend.saveImage();
             };
 
+            // sandbox handlers
+            sandbox.on('ui.download',           function() { $scope.download(); });
             sandbox.on('ui.toggleControlPanel', function() { $scope.showControlPanel = !$scope.showControlPanel; });
             sandbox.on('ui.toggleGallery',      function() { $scope.showGallery = !$scope.showGallery; });
             sandbox.on('ui.presetSelected',     function(data) {

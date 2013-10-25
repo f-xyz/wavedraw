@@ -29,7 +29,7 @@ require.config({
 window.name = "NG_DEFER_BOOTSTRAP!";
 
 require([
-    'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/popup',
+    'modules/sandbox', 'modules/viewport', 'modules/domEvents', 'modules/world', 'modules/splash',
     'angular', 'ngCtrls/app', 'ngCtrls/toolbar', 'ngCtrls/controlPanel', 'ngCtrls/gallery',
     'modules/debug'
     ], function() {
@@ -39,18 +39,13 @@ require([
             e.preventDefault();
         });
 
-        (function loading(opacity) {
-            var node = document.querySelector('.overlay');
-            if (opacity > 0) {
-                node.style.opacity = opacity;
-                setTimeout(function() { loading(opacity - 0.05); }, 10);
-            } else {
-                node.style.display = 'none';
-            }
-        })(1);
+        var splash = require('modules/splash');
+        splash.setText('Starting...');
+        splash.hide();
 
         var angular = require('angular');
-        angular.bootstrap(angular.element(document.documentElement), ['waveDraw']);
+        var html = document.documentElement;
+        angular.bootstrap(html, ['waveDraw']);
 
         var sandbox = require('modules/sandbox');
         if (location.hash === '#/edit') {

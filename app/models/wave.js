@@ -31,7 +31,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
 
         this.particles = [];
         this.ttl = this.maxTtl = preset.ttl;
-        this.opacity = preset.drawOpacity / (preset.persistence ? 1500 : 100);
+        this.opacity = preset.drawOpacity / (preset.persistence ? 750 : 100);
 
         var time = Date.now() / 1000;
         var r = preset.r;
@@ -47,8 +47,7 @@ define(['utils', 'conf', 'modules/sandbox', 'models/rgba', 'models/processing'],
         var count = preset.count;
         for (var i = 0; i < count; i++) {
             var direction = utils.mix(0, 2*Math.PI, i/count);
-            var particle = new Particle(x, y, direction);
-            this.particles.push(particle);
+            this.particles.push(new Particle(x, y, direction));
         }
     }
 
