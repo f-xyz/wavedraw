@@ -8,6 +8,7 @@ var events = require('events');
 var async = require('async');
 var md5 = require('md5');
 
+
 var app = {
 
     indexes: ['index.html'],
@@ -23,7 +24,7 @@ var app = {
 
     request: function(request, response) {
         var requestUrl = url.parse(request.url, true);
-        var path = process.cwd() + requestUrl.pathname;
+        var path = __dirname + requestUrl.pathname;
         var message;
 
         if (this.isForbidden(requestUrl.pathname)) {
@@ -141,6 +142,7 @@ var app = {
     }
 };
 
+
 var controllers = {
     presets: {
         list: function(request, response) {
@@ -171,7 +173,7 @@ var controllers = {
                 var rawBase64 = post.replace(/^data:image\/\w+;base64,/, '');
                 var buffer = new Buffer(rawBase64, 'base64');
                 var hash = md5.digest_s(String(Date.now()) + 100 * Math.random());
-                var fileName = 'uploads/' + hash + '.png';
+                var fileName = __dirname + '/uploads/' + hash + '.png';
                 fs.writeFile(fileName, buffer, function(err) {
                     if (err) throw new Error(err);
                     response.writeHead(200, { 'Content-Type': 'text/json' });
@@ -206,8 +208,9 @@ var controllers = {
     }
 };
 
+
 var presets = {
-    dbPath: 'db/presets.json',
+    dbPath: __dirname + '/db/presets.json',
     presets: null,
     load: function(callback) {
         if (this.presets) {
@@ -256,4 +259,6 @@ var presets = {
     }
 };
 
+
+console.log('[paths]:', __dirname, process.cwd());
 app.listen(null);
