@@ -10,7 +10,8 @@
         "async": "0.2.x",
         "ejs": "0.8.x",
         "requirejs": "2.1.x",
-        "connect": "2.9.x"
+        "connect": "2.9.x",
+        "md5": "1.0.x"
     },
     "engines": {
         "node": "0.10.21",
