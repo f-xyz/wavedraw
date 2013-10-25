@@ -2,11 +2,11 @@ var http = require('http');
 var url = require('url');
 var path = require('path');
 var fs = require('fs');
-var qs = require('querystring');
 var mime = require('mime');
 var util = require('util');
 var events = require('events');
 var async = require('async');
+var md5 = require('md5');
 
 var app = {
 
@@ -115,13 +115,14 @@ var app = {
             if (parts) {
                 var controller = controllers[parts[1]];
                 if (controller) {
-                    var action = controller[parts[2]] || controller.index;
+                    var action = controller[parts[2]];
                     if (action) {
-//                        try {
-                        action.call(controller, request, response, url);
-//                        } catch (exc) {
-//                            app.error(response, 500, e.message);
-//                        }
+                        try {
+                            action.call(controller, request, response, url);
+                        } catch (exc) {
+                            app.error(response, 500, exc.message);
+                            console.log(exc);
+                        }
                         return true;
                     }
                 }
@@ -135,16 +136,16 @@ var app = {
     },
 
     error: function(response, code, msg) {
-        response.writeHead(code, {'Content-Type': 'text/plain'});
+        response.writeHead(code, { 'Content-Type': 'text/plain' });
         response.end(msg + '\n');
     }
 };
 
 var controllers = {
     presets: {
-        index: function(request, response) {
+        list: function(request, response) {
             presets.load(function(presets) {
-                response.writeHead(200, {'Content-Type': 'text/json'});
+                response.writeHead(200, { 'Content-Type': 'text/json' });
                 response.write(JSON.stringify(presets));
                 response.end('\n');
             });
@@ -155,26 +156,52 @@ var controllers = {
             request.addListener('end', function() {
                 post = JSON.parse(post);
                 presets.save(post.name, post.preset, function(name) {
-                    response.writeHead(200, {'Content-Type': 'text/json'});
-                    response.write(JSON.stringify({
-                        name: name
-                    }));
+                    response.writeHead(200, { 'Content-Type': 'text/json' });
+                    response.write(JSON.stringify({ name: name }));
                     response.end();
                 });
             });
         }
     },
     download: {
-        index: function(request, response) {
+        save: function(request, response) {
             var post = '';
             request.addListener('data', function(chunk) { post += chunk; });
             request.addListener('end', function() {
-//                post = JSON.parse(post);
-//                util.inspect(post);
-                response.writeHead(200, {'Content-Type': 'text/json'});
-                response.write({ ok: true });
-                response.end();
+                var rawBase64 = post.replace(/^data:image\/\w+;base64,/, '');
+                var buffer = new Buffer(rawBase64, 'base64');
+                var hash = md5.digest_s(String(Date.now()) + 100 * Math.random());
+                var fileName = 'uploads/' + hash + '.png';
+                fs.writeFile(fileName, buffer, function(err) {
+                    if (err) throw new Error(err);
+                    response.writeHead(200, { 'Content-Type': 'text/json' });
+                    response.write(JSON.stringify({ file: fileName }));
+                    response.end();
+                });
             });
+        },
+        download: function(request, response, url) {
+            var filePath = url.query.file;
+            var basename = path.basename(filePath);
+            var safePath = 'uploads/' + basename;
+            if (fs.existsSync(safePath)) {
+                fs.readFile(safePath, function(err, file) {
+                    if (err) throw new Error(err);
+
+                    response.writeHead(200, {
+                        'Content-Type': 'image/png',
+                        'Content-Disposition': 'attachment; filename=' + basename
+                    });
+                    response.write(file);
+                    response.end();
+
+                    fs.unlink(safePath);
+                });
+            } else {
+                response.writeHead(500, { 'Content-Type': 'text/plain' });
+                response.write('404 Not Found');
+                response.end();
+            }
         }
     }
 };
