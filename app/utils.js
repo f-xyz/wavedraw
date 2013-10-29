@@ -131,7 +131,9 @@ define(['sprintf'], function() {
         if (this.events[event]) {
             if (callback) {
                 var index = this.events[event].indexOf(callback);
-                this.events[event].splice(index, 1);
+                if (index >= 0) {
+                    this.events[event].splice(index, 1);
+                }
             } else {
                 delete this.events[event];
             }
