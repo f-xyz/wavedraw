@@ -1,3 +1,1 @@
-# wavedraw
-
-### Demo: wavedraw.herokuapp.com
+# [demo](http://wavedraw.herokuapp.com)
